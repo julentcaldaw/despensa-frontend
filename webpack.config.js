@@ -38,6 +38,7 @@ module.exports = {
       directory: path.join(__dirname, 'public'),
     },
     historyApiFallback: true,
+    allowedHosts: 'all', // Permite cualquier host para evitar Invalid Host header
     proxy: [
       {
         context: ['/api'],
