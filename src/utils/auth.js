@@ -18,7 +18,7 @@ export const authFetch = async (url, options = {}) => {
     ...(options.headers || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5050/api';
-  const finalUrl = `${apiUrl}${url}` 
+  const apiUrl = process.env.REACT_APP_API_URL || 'https://despensa-backend-yw9n.onrender.com/api';
+  const finalUrl = `${apiUrl}${url}`;
   return fetch(finalUrl, { ...options, headers });
 };

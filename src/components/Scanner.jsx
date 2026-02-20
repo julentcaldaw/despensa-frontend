@@ -19,7 +19,8 @@ const Scanner = ({ onScan, onClose }) => {
         setLoading(true);
         setError(null);
         try {
-          const res = await fetch('/api/barcode', {
+          const apiUrl = process.env.REACT_APP_API_URL || 'https://despensa-backend-yw9n.onrender.com/api';
+          const res = await fetch(`${apiUrl}/barcode`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

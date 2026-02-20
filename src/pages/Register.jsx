@@ -16,7 +16,7 @@ const Register = ({ onRegister }) => {
     setError('');
     setSuccess('');
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5050/api';
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://despensa-backend-yw9n.onrender.com/api';
       const response = await fetch(`${apiUrl}/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

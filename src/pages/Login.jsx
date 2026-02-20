@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { setToken } from '../utils/auth';
 import { Mail, Lock } from 'lucide-react';
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5050';
+const apiUrl = process.env.REACT_APP_API_URL || 'https://despensa-backend-yw9n.onrender.com';
 
 const Login = ({ onLogin, setShowRegister }) => {
   const [email, setEmail] = useState('');
