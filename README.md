@@ -1,3 +1,4 @@
+``
 # despensa-frontend
 
 Frontend de la aplicación de gestión de despensa y recetas. Permite a los usuarios gestionar los ingredientes de su despensa, consultar recetas y administrar su perfil.
@@ -19,12 +20,32 @@ src/
   App.jsx                # Componente principal de la app
   index.jsx              # Punto de entrada de React
   components/            # Componentes reutilizables (Header, Footer, Layout, etc.)
-  pages/                 # Vistas principales (Login, Register, Pantry, Recipes, User)
+  pages/                 # Vistas principales (Login, Register, Pantry, Recipes, ShoppingList, User)
   utils/                 # Utilidades y helpers (auth.js)
 public/
   index.html             # HTML principal
 webpack.config.js        # Configuración de Webpack
 package.json             # Dependencias y scripts
+```
+
+## Árbol de componentes
+
+```
+App
+├── Header
+├── Layout
+│   ├── BottomNavigation
+│   ├── Footer
+│   └── (Rutas/Páginas)
+│       ├── Login
+│       ├── Register
+│       ├── Pantry
+│       │   ├── AddIngredient
+│       │   └── Scanner
+│       ├── Recipes
+│       ├── ShoppingList
+│       └── User
+
 ```
 
 ## Instalación y uso
