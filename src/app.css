@@ -1,3 +1,22 @@
+.pantry-item-bought {
+  opacity: 0.6;
+  background: #e5e7eb !important;
+  border: 2px solid #dbba38;
+  position: relative;
+}
+
+.pantry-item-bought-indicator {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  background: #dbba38;
+  color: #fff;
+  font-size: 0.85em;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px 0 rgba(31,41,55,0.08);
+}
 /* Mensaje de error en color primario */
 .pantry-error-primary {
   color: var(--primary);

@@ -17,10 +17,8 @@ const CATEGORY_MAP = {
 import { authFetch } from '../utils/auth';
 function ShoppingList({ currentTab, onTabChange }) {
 			const [addIngredientError, setAddIngredientError] = useState("");
-		// Estado para filtrar por tienda
 		const [selectedShopFilter, setSelectedShopFilter] = useState('Todas');
 	const [shoppingList, setShoppingList] = useState([]);
-		// Cargar lista de compra desde la base de datos
 		const fetchShoppingList = async () => {
 			try {
 				const token = localStorage.getItem('token');
@@ -44,7 +42,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 			}
 		};
 
-		// Cargar la lista al montar el componente
 		useEffect(() => {
 			fetchShoppingList();
 		}, []);
@@ -116,7 +113,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAddIngredientError(data.results[0].error);
 				return;
 			}
-			// Tras guardar, recargar la lista desde la base de datos
 			await fetchShoppingList();
 			setShowAdd(false);
 			setSelectedIngredient('');
@@ -135,17 +131,48 @@ function ShoppingList({ currentTab, onTabChange }) {
 	}, [selectedIngredient, allIngredients]);
 
 
-	const handleBought = (shopIdx, itemIdx) => {
-		setShoppingList(prev => {
-			const newList = prev.map((group, gIdx) => {
+	async function marcarComoComprado(id, token) {
+	  const response = await fetch(`http://localhost:5000/api/shoppinglist/${id}/bought`, {
+		method: 'PATCH',
+		headers: {
+		  'Content-Type': 'application/json',
+		  'Authorization': `Bearer ${token}`
+		},
+		body: JSON.stringify({ bought: true })
+	  });
+	  if (!response.ok) {
+		const error = await response.json();
+		throw new Error(error.message || 'Error al marcar como comprado');
+	  }
+	  const itemActualizado = await response.json();
+	  return itemActualizado;
+	}
+
+	const handleBought = async (shopIdx, itemIdx) => {
+		const group = shoppingList[shopIdx];
+		const item = group.items[itemIdx];
+		try {
+			const token = localStorage.getItem('token');
+			if (!token) {
+				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
+				return;
+			}
+			const ingredientId = item.id || item._id;
+			// Actualizar la lista local inmediatamente para feedback visual
+			setShoppingList(prev => prev.map((group, gIdx) => {
 				if (gIdx !== shopIdx) return group;
 				return {
 					...group,
-					items: group.items.filter((_, i) => i !== itemIdx)
+					items: group.items.map((it, i) => i === itemIdx ? { ...it, bought: true } : it)
 				};
-			});
-			return newList.filter(group => group.items.length > 0);
-		});
+			}));
+			// Luego enviar al backend
+			const itemActualizado = await marcarComoComprado(ingredientId, token);
+			// Opcional: recargar desde backend para sincronizar
+			await fetchShoppingList();
+		} catch (err) {
+			setAuthError(err.message || 'Error de conexión al marcar como comprado.');
+		}
 	};
 
 	const handleDelete = (shopIdx, itemIdx) => {
@@ -303,7 +330,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 												return (
 													<motion.div
 														key={item.id || item._id || (item.ingredient && item.ingredient.name ? item.ingredient.name : item.ingredient) + item.shop}
-														className={`pantry-item ${cat.class || ''}`}
+														className={`pantry-item ${cat.class || ''} ${item.bought ? 'pantry-item-bought' : ''}`}
 														initial={{ scale: 0.8, opacity: 0 }}
 														animate={{ scale: 1, opacity: 1 }}
 														exit={{ scale: 0.8, opacity: 0 }}
@@ -330,6 +357,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 															<Trash2 size={18} />
 														</button>
 														<button className="pantry-item-delete" style={{right: 56}} onClick={() => handleBought(item._shopIdx, item._itemIdx)} title="Comprado">✓</button>
+														{item.bought && <span className="pantry-item-bought-indicator">Comprado</span>}
 													</motion.div>
 												);
 											})}
@@ -346,7 +374,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 											return (
 												<motion.div
 													key={item.id || item._id || (item.ingredient && item.ingredient.name ? item.ingredient.name : item.ingredient)}
-													className={`pantry-item ${cat.class || ''}`}
+													className={`pantry-item ${cat.class || ''} ${item.bought ? 'pantry-item-bought' : ''}`}
 													initial={{ scale: 0.8, opacity: 0 }}
 													animate={{ scale: 1, opacity: 1 }}
 													exit={{ scale: 0.8, opacity: 0 }}
@@ -373,6 +401,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 														<Trash2 size={18} />
 													</button>
 													<button className="pantry-item-delete" style={{right: 56}} onClick={() => handleBought(0, itemIdx)} title="Comprado">✓</button>
+													{item.bought && <span className="pantry-item-bought-indicator">Comprado</span>}
 												</motion.div>
 											);
 										})}
