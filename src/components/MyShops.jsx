@@ -5,7 +5,7 @@ const MyShops = ({ shops, setShops }) => {
 
   // Obtener token JWT desde localStorage (ajusta si lo guardas en otro sitio)
   const token = localStorage.getItem('token');
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
   // Obtener tiendas del backend al montar
   useEffect(() => {

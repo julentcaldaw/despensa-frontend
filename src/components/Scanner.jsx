@@ -19,7 +19,7 @@ const Scanner = ({ onScan, onClose }) => {
         setLoading(true);
         setError(null);
         try {
-          const apiUrl = process.env.REACT_APP_API_URL || 'https://despensa-backend-yw9n.onrender.com/api';
+          const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
           const res = await fetch(`${apiUrl}/barcode`, {
             method: 'POST',
             headers: {
