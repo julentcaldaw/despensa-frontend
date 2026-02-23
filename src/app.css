@@ -114,6 +114,13 @@
   gap: 12px;
 }
 
+/* Responsive: dos columnas hasta un mínimo, luego una */
+@media (max-width: 340px) {
+  .pantry-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .pantry-item {
   aspect-ratio: 1 / 1;
   border-radius: 24px;

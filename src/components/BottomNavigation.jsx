@@ -1,9 +1,10 @@
 import React from 'react';
-import { Package, ChefHat, User } from 'lucide-react';
+import { Package, ChefHat, User, ShoppingCart } from 'lucide-react';
 
 const NAV_ITEMS = [
   { key: 'despensa', label: 'Despensa', icon: Package },
   { key: 'recetas', label: 'Recetas', icon: ChefHat },
+  { key: 'shoppinglist', label: 'Lista', icon: ShoppingCart },
   { key: 'perfil', label: 'Perfil', icon: User }
 ];
 

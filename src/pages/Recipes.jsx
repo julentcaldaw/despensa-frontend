@@ -18,9 +18,15 @@ const Recipes = ({ currentTab, onTabChange }) => {
       const response = await authFetch('/recipes');
       if (!response.ok) throw new Error('Error al buscar recetas');
       const data = await response.json();
-      setRecipes(data);
+      if (Array.isArray(data)) {
+        setRecipes(data);
+      } else {
+        setRecipes([]);
+        setError('La respuesta del servidor no es válida.');
+      }
     } catch (err) {
       setError(err.message);
+      setRecipes([]);
     } finally {
       setLoading(false);
     }
@@ -43,7 +49,12 @@ const Recipes = ({ currentTab, onTabChange }) => {
       });
       if (!response.ok) throw new Error('Error al buscar recetas personalizadas');
       const data = await response.json();
-      setRecipes(data);
+      if (Array.isArray(data)) {
+        setRecipes(data);
+      } else {
+        setRecipes([]);
+        setError('La respuesta del servidor no es válida.');
+      }
     } catch (err) {
       setError(err.message);
     } finally {

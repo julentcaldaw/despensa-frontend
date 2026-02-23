@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 
 const MyShops = ({ shops, setShops }) => {
   const [newShop, setNewShop] = useState("");
+  const [addError, setAddError] = useState("");
 
-  // Obtener token JWT desde localStorage (ajusta si lo guardas en otro sitio)
   const token = localStorage.getItem('token');
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  // Obtener tiendas del backend al montar
   useEffect(() => {
     if (!token) return;
     fetch(`${API_URL}/myshops`, {
@@ -21,31 +20,54 @@ const MyShops = ({ shops, setShops }) => {
         if (Array.isArray(data)) setShops(data);
       })
       .catch(err => console.error('Error al obtener tiendas:', err));
-    // eslint-disable-next-line
   }, [token, API_URL]);
 
   const handleAddShop = () => {
-    if (newShop.trim() && !shops.includes(newShop.trim())) {
-      fetch(`${API_URL}/myshops`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ shop: newShop.trim() })
-      })
-        .then(res => res.json())
-        .then(data => {
-          // Si el backend responde con la lista actualizada:
-          if (Array.isArray(data)) {
-            setShops(data);
-          } else {
-            setShops([...shops, newShop.trim()]);
-          }
-          setNewShop("");
-        })
-        .catch(err => console.error('Error al añadir tienda:', err));
+    const safeShops = Array.isArray(shops) ? shops : [];
+    const trimmedShop = newShop.trim();
+    setAddError("");
+    console.log('Valor enviado al backend:', trimmedShop);
+    if (!trimmedShop) {
+      setAddError("El nombre de la tienda no puede estar vacío.");
+      return;
     }
+    if (safeShops.includes(trimmedShop)) {
+      setAddError("Esa tienda ya existe en tu lista.");
+      return;
+    }
+    fetch(`${API_URL}/myshops`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ shop: trimmedShop })
+    })
+      .then(async res => {
+        if (res.status === 409) {
+          setAddError("Esa tienda ya existe en tu lista.");
+          return null;
+        }
+        const data = await res.json();
+        return data;
+      })
+      .then(data => {
+        if (!data) return;
+        if (data && data.error) {
+          setAddError(data.error);
+          return;
+        }
+        if (Array.isArray(data)) {
+          setShops(data);
+        } else {
+          setShops([...safeShops, trimmedShop]);
+        }
+        setNewShop("");
+      })
+      .catch(err => {
+        setAddError("Error al añadir tienda.");
+        console.error('Error al añadir tienda:', err);
+      });
   };
 
   const handleDeleteShop = (shop) => {
@@ -57,7 +79,6 @@ const MyShops = ({ shops, setShops }) => {
     })
       .then(res => res.json())
       .then(data => {
-        // Si el backend responde con la lista actualizada:
         if (Array.isArray(data)) {
           setShops(data);
         } else {
@@ -73,10 +94,14 @@ const MyShops = ({ shops, setShops }) => {
       <input
         type="text"
         value={newShop}
-        onChange={(e) => setNewShop(e.target.value)}
+        onChange={(e) => {
+          setNewShop(e.target.value);
+          setAddError("");
+        }}
         placeholder="Añadir nueva tienda"
       />
       <button onClick={handleAddShop}>Añadir</button>
+      {addError && <div style={{ color: 'red', marginTop: 8 }}>{addError}</div>}
       <ul>
         {shops && shops.length > 0 ? (
           shops.map((shop) => (

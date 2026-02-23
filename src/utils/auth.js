@@ -21,5 +21,12 @@ export const authFetch = async (url, options = {}) => {
   };
   const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
   const finalUrl = `${apiUrl}${url}`;
-  return fetch(finalUrl, { ...options, headers });
+  const response = await fetch(finalUrl, { ...options, headers });
+  if (response.status === 401) {
+    removeToken();
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+  }
+  return response;
 };

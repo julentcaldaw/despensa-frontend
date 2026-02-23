@@ -3,12 +3,21 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Pantry from './pages/Pantry';
 import Recipes from './pages/Recipes';
+import ShoppingList from './pages/ShoppingList';
 import User from './pages/User';
 import Layout from './components/Layout';
 
 function App() {
   const [showRegister, setShowRegister] = React.useState(false);
-  const [user, setUser] = React.useState(null);
+  const [user, setUser] = React.useState(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Puedes guardar datos de usuario en localStorage o recuperarlos del backend
+      // Aquí solo comprobamos que el token existe
+      return { token };
+    }
+    return null;
+  });
   const [view, setView] = React.useState('despensa');
 
   const handleLogin = (user) => {
@@ -24,6 +33,7 @@ function App() {
       <Layout user={user} view={view} setView={setView}>
         {view === 'despensa' && <Pantry currentTab={view} onTabChange={setView} />}
         {view === 'recetas' && <Recipes currentTab={view} onTabChange={setView} />}
+        {view === 'shoppinglist' && <ShoppingList currentTab={view} onTabChange={setView} />}
         {view === 'perfil' && <User currentTab={view} onTabChange={setView} />}
       </Layout>
     );
