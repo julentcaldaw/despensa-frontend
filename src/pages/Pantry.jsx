@@ -1,3 +1,33 @@
+  const handleDelete = async (id) => {
+    try {
+      setLoading(true);
+      setError('');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No hay sesión activa. Por favor, inicia sesión.');
+        setLoading(false);
+        return;
+      }
+      const response = await authFetch(`/pantry/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message || 'No se pudo eliminar el ingrediente');
+        setLoading(false);
+        return;
+      }
+      fetchPantry();
+    } catch (err) {
+      setError(err.message || 'Error de conexión al eliminar ingrediente.');
+    } finally {
+      setLoading(false);
+    }
+  };
 import { Plus, Search, Trash2, Leaf, Drumstick, Egg, Soup, Cookie, ScanLine, Salad, Fish, Coffee } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../utils/auth';

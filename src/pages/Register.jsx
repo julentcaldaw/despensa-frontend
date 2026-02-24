@@ -1,14 +1,16 @@
 
 import React, { useState } from 'react';
 import { setToken } from '../utils/auth';
+import { useNavigate } from 'react-router-dom';
 
-const Register = ({ onRegister }) => {
+const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,16 +19,16 @@ const Register = ({ onRegister }) => {
     setSuccess('');
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${apiUrl}/users/register`, {
+      const response = await fetch(`${apiUrl}/registro`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Error al registrar');
-      if (data.token) setToken(data.token); 
+      if (data.token) setToken(data.token);
       setSuccess('Registro exitoso. Ahora puedes iniciar sesión.');
-      onRegister && onRegister();
+      setTimeout(() => navigate('/login'), 1200);
     } catch (err) {
       setError(err.message);
     } finally {

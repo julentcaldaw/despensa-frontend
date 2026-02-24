@@ -1,23 +1,26 @@
 
 
+
 import React, { useState } from 'react';
 import { setToken } from '../utils/auth';
 import { Mail, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-const Login = ({ onLogin, setShowRegister }) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${apiUrl}/users/login`, {
+      const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -25,7 +28,7 @@ const Login = ({ onLogin, setShowRegister }) => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Error al iniciar sesión');
       setToken(data.token);
-      onLogin && onLogin(data.user);
+      navigate('/despensa');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -82,7 +85,7 @@ const Login = ({ onLogin, setShowRegister }) => {
           </button>
           <button
             type="button"
-            onClick={() => setShowRegister(true)}
+            onClick={() => navigate('/register')}
             className="login-register-link"
             style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}
           >

@@ -4,6 +4,7 @@ import User from "./User";
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNavigation from '../components/BottomNavigation';
 import { Trash2, Coffee, Egg, Leaf, Fish, Cookie, Salad } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 
 const CATEGORY_MAP = {
 	lacteos_huevos: { class: 'category-dairy', icon: <Egg /> },
@@ -16,6 +17,36 @@ const CATEGORY_MAP = {
 
 import { authFetch } from '../utils/auth';
 function ShoppingList({ currentTab, onTabChange }) {
+				// Elimina todos los ingredientes comprados
+				const handleDeleteBought = async () => {
+					const boughtItems = shoppingList.flatMap(group =>
+						group.items.filter(item => item.bought && item.id)
+					);
+					if (boughtItems.length === 0) {
+						setAuthError('No hay ingredientes comprados para eliminar.');
+						return;
+					}
+					try {
+						const token = localStorage.getItem('token');
+						if (!token) {
+							setAuthError('No hay sesión activa. Por favor, inicia sesión.');
+							return;
+						}
+						// Eliminar cada ingrediente comprado
+						for (const item of boughtItems) {
+							await authFetch(`/listacompra/${item.id}`, {
+								method: 'DELETE',
+								headers: {
+									'Content-Type': 'application/json',
+									'Authorization': `Bearer ${token}`
+								}
+							});
+						}
+						await fetchShoppingList();
+					} catch (err) {
+						setAuthError('Error al eliminar ingredientes comprados.');
+					}
+				};
 			const [addIngredientError, setAddIngredientError] = useState("");
 		const [selectedShopFilter, setSelectedShopFilter] = useState('Todas');
 	const [shoppingList, setShoppingList] = useState([]);
@@ -27,7 +58,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 					setShoppingList([]);
 					return;
 				}
-				const response = await authFetch('/shoppinglist');
+				const response = await authFetch('/listacompra');
 				if (response.status === 401 || response.status === 403) {
 					setAuthError('Sesión expirada o token inválido. Reintenta o cierra sesión.');
 					setShoppingList([]);
@@ -73,7 +104,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 		fetchAllIngredients();
 	}, []);
 
-	// Comprobar token globalmente
 	useEffect(() => {
 		const token = localStorage.getItem('token');
 		if (!token) {
@@ -89,7 +119,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
-			const response = await authFetch('/shoppinglist', {
+			const response = await authFetch('/listacompra', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -132,60 +162,115 @@ function ShoppingList({ currentTab, onTabChange }) {
 
 
 	async function marcarComoComprado(id, token) {
-	  const response = await fetch(`http://localhost:5000/api/shoppinglist/${id}/bought`, {
+	const response = await authFetch(`/listacompra/${id}/bought`, {
 		method: 'PATCH',
 		headers: {
-		  'Content-Type': 'application/json',
-		  'Authorization': `Bearer ${token}`
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`
 		},
 		body: JSON.stringify({ bought: true })
-	  });
-	  if (!response.ok) {
-		const error = await response.json();
-		throw new Error(error.message || 'Error al marcar como comprado');
-	  }
-	  const itemActualizado = await response.json();
-	  return itemActualizado;
+	});
+	if (!response.ok) {
+		throw new Error('Error al marcar como comprado');
 	}
+	const itemActualizado = await response.json();
+	return itemActualizado;
+}
 
-	const handleBought = async (shopIdx, itemIdx) => {
+	const handleBought = async (itemId) => {
+	// Busca el grupo y el item por id
+	let foundGroupIdx = -1;
+	let foundItemIdx = -1;
+	for (let gIdx = 0; gIdx < shoppingList.length; gIdx++) {
+		const group = shoppingList[gIdx];
+		const itemIdx = group.items.findIndex(it => it.id === itemId);
+		if (itemIdx !== -1) {
+			foundGroupIdx = gIdx;
+			foundItemIdx = itemIdx;
+			break;
+		}
+	}
+	if (foundGroupIdx === -1 || foundItemIdx === -1) {
+		setAuthError('No se encontró el ingrediente para marcar como comprado.');
+		return;
+	}
+	const group = shoppingList[foundGroupIdx];
+	const item = group.items[foundItemIdx];
+	if (!item || !item.id) {
+		// eslint-disable-next-line no-console
+		console.error('No se puede marcar como comprado: ingrediente sin id. Objeto:', item);
+		setAuthError('No se puede marcar este ingrediente como comprado porque no tiene id.');
+		return;
+	}
+	// eslint-disable-next-line no-console
+	console.log('Marcando como comprado:', item, 'ID enviado al backend:', item.id);
+	try {
+		const token = localStorage.getItem('token');
+		if (!token) {
+			setAuthError('No hay sesión activa. Por favor, inicia sesión.');
+			return;
+		}
+		setShoppingList(prev => prev.map((group, gIdx) => {
+			if (gIdx !== foundGroupIdx) return group;
+			return {
+				...group,
+				items: group.items.map((it, i) => i === foundItemIdx ? { ...it, bought: true } : it)
+			};
+		}));
+		const itemActualizado = await marcarComoComprado(item.id, token);
+		await fetchShoppingList();
+	} catch (err) {
+		setAuthError(err.message || 'Error de conexión al marcar como comprado.');
+	}
+};
+
+
+
+	const handleDelete = async (shopIdx, itemIdx) => {
 		const group = shoppingList[shopIdx];
+		if (!group || !group.items || !group.items[itemIdx]) {
+			setAuthError('No se puede eliminar: item no definido.');
+			return;
+		}
 		const item = group.items[itemIdx];
+		const itemId = item.id;
+		// Log para depuración
+		// eslint-disable-next-line no-console
+		console.log('Intentando eliminar:', { itemId, item });
+		if (!itemId) {
+			// Mostrar el objeto problemático en consola para depuración
+			// eslint-disable-next-line no-console
+			console.error('No se puede eliminar: ingrediente sin id. Objeto:', item);
+			setAuthError('No se puede eliminar este ingrediente porque no tiene id. Consulta la consola para más detalles.');
+			return;
+		}
 		try {
 			const token = localStorage.getItem('token');
 			if (!token) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
-			const ingredientId = item.id || item._id;
-			// Actualizar la lista local inmediatamente para feedback visual
-			setShoppingList(prev => prev.map((group, gIdx) => {
-				if (gIdx !== shopIdx) return group;
-				return {
-					...group,
-					items: group.items.map((it, i) => i === itemIdx ? { ...it, bought: true } : it)
-				};
-			}));
-			// Luego enviar al backend
-			const itemActualizado = await marcarComoComprado(ingredientId, token);
-			// Opcional: recargar desde backend para sincronizar
+			// Llamada DELETE al backend
+			const response = await authFetch(`/listacompra/${itemId}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				}
+			});
+			if (response.status === 401 || response.status === 403) {
+				setAuthError('Sesión expirada o token inválido. Reintenta o cierra sesión.');
+				return;
+			}
+			if (!response.ok) {
+				setAuthError('Error al eliminar el ingrediente.');
+				return;
+			}
+			// Sincroniza con backend tras eliminar
 			await fetchShoppingList();
 		} catch (err) {
-			setAuthError(err.message || 'Error de conexión al marcar como comprado.');
+			setAuthError('Error de conexión al eliminar ingrediente.');
 		}
-	};
-
-	const handleDelete = (shopIdx, itemIdx) => {
-		setShoppingList(prev => {
-			const newList = prev.map((group, gIdx) => {
-				if (gIdx !== shopIdx) return group;
-				return {
-					...group,
-					items: group.items.filter((_, i) => i !== itemIdx)
-				};
-			});
-			return newList.filter(group => group.items.length > 0);
-		});
 	};
 
 	const [search, setSearch] = useState('');
@@ -221,9 +306,12 @@ function ShoppingList({ currentTab, onTabChange }) {
 	}
 
 
+		// ...existing code...
+		// Botón para eliminar todos los comprados
+		const hayComprados = shoppingList.some(group => group.items.some(item => item.bought));
 		return (
 			<div className="pantry-container">
-				{authError && (
+				{/* {authError && (
 					<div className="pantry-error pantry-error-primary" style={{marginBottom:'1rem', textAlign:'center'}}>
 						{authError}
 						<button className="btn-primary" style={{marginLeft:'1rem'}} onClick={() => window.location.reload()}>Reintentar</button>
@@ -232,7 +320,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 				)}
 				<button className="btn-primary" style={{marginBottom:'1rem'}} onClick={() => setShowUser(true)}>
 					Perfil de usuario
-				</button>
+				</button> */}
 				{showUser && (
 					<User
 						currentTab={currentTab}
@@ -247,6 +335,27 @@ function ShoppingList({ currentTab, onTabChange }) {
 						<button className="pantry-float-btn add" title="Añadir ingrediente" onClick={() => setShowAdd(true)}>
 							+
 						</button>
+						{hayComprados && (
+							<button
+								className="pantry-float-btn delete-bought"
+								title="Eliminar todos los comprados"
+								style={{
+									background: '#fff',
+									color: '#e74c3c',
+									border: '2px solid #e74c3c',
+									marginLeft: 8,
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									padding: '6px',
+									borderRadius: '24px',
+									boxShadow: '0 2px 8px rgba(231,76,60,0.12)'
+								}}
+								onClick={handleDeleteBought}
+							>
+								<ShoppingCart size={24} color="#e74c3c" />
+							</button>
+						)}
 					</div>
 				</div>
 				<div className="pantry-search">
@@ -321,11 +430,11 @@ function ShoppingList({ currentTab, onTabChange }) {
 										_itemIdx: itemIdx
 									}));
 								});
-								return Object.entries(groupedByShop).map(([shop, items], idx) => (
+								return Object.entries(groupedByShop).map(([shop, items], shopIdx) => (
 									<div key={shop} style={{margin:'0 0 48px 0'}}>
 										<div style={{width:'100%', textAlign:'center', fontWeight:'bold', fontSize:'1.1em', margin:'24px 0 16px 0'}}>{shop}</div>
 										<div className="pantry-grid" style={{marginBottom:'16px'}}>
-											{items.map((item, idxItem) => {
+											{items.map((item, itemIdx) => {
 												const cat = CATEGORY_MAP[item.category] || {};
 												return (
 													<motion.div
@@ -343,8 +452,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 															item.name
 																? item.name
 																: item.ingredient && item.ingredient.name
-																	? item.ingredient.name
-																	: item.ingredient
+																? item.ingredient.name
+																: item.ingredient
 														}</div>
 														<span className="pantry-item-category">
 															{(item.category
@@ -353,11 +462,23 @@ function ShoppingList({ currentTab, onTabChange }) {
 																? (item.category || item.ingredient.category).replace(/_/g, ' ').toUpperCase()
 																: 'SIN CATEGORÍA'}
 														</span>
-														<button className="pantry-item-delete" onClick={() => handleDelete(item._shopIdx, item._itemIdx)}>
+														<button
+															className="pantry-item-delete"
+															onClick={() => handleDelete(shopIdx, itemIdx)}
+															disabled={!item.id}
+															title={!item.id ? 'No se puede eliminar: ingrediente sin id' : 'Eliminar'}
+														>
 															<Trash2 size={18} />
 														</button>
-														<button className="pantry-item-delete" style={{right: 56}} onClick={() => handleBought(item._shopIdx, item._itemIdx)} title="Comprado">✓</button>
-														{item.bought && <span className="pantry-item-bought-indicator">Comprado</span>}
+														<button
+															className="pantry-item-delete"
+															style={{ right: 56 }}
+															onClick={() => handleBought(item.id)}
+															title="Comprado"
+														>
+															<ShoppingCart size={18} color="#e74c3c" />
+														</button>
+														{/* {item.bought && <span className="pantry-item-bought-indicator">Comprado</span>} */}
 													</motion.div>
 												);
 											})}
@@ -400,8 +521,15 @@ function ShoppingList({ currentTab, onTabChange }) {
 													<button className="pantry-item-delete" onClick={() => handleDelete(0, itemIdx)}>
 														<Trash2 size={18} />
 													</button>
-													<button className="pantry-item-delete" style={{right: 56}} onClick={() => handleBought(0, itemIdx)} title="Comprado">✓</button>
-													{item.bought && <span className="pantry-item-bought-indicator">Comprado</span>}
+													<button
+														className="pantry-item-delete"
+														style={{ right: 56 }}
+														onClick={() => handleBought(item.id)}
+														title="Comprado"
+													>
+														<ShoppingCart size={18} color="#e74c3c" />
+													</button>
+													{/* {item.bought && <span className="pantry-item-bought-indicator">Comprado</span>} */}
 												</motion.div>
 											);
 										})}
