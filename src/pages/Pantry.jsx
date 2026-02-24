@@ -154,7 +154,9 @@ const Pantry = ({ currentTab, onTabChange }) => {
   );
 
   return (
-    <div className="pantry-container">
+    <div className="pantry-bg-main">
+      <div className="pantry-main-card">
+        <div className="pantry-container">
       {showScanner && (
         <Scanner
           show={showScanner}
@@ -164,8 +166,9 @@ const Pantry = ({ currentTab, onTabChange }) => {
         />
       )}
 
-      <div className="pantry-header">
-        <h2 className="pantry-title">miDESPENSA</h2>
+      <div className="pantry-header" style={{flexDirection: 'column', alignItems: 'center'}}>
+        <img src="/logoA.png" alt="Logo" style={{ maxWidth: '320px', width: '100%', height: 'auto', marginBottom: '0.7rem', marginTop: '-0.5rem' }} />
+        <h2 className="pantry-title" style={{textAlign: 'center', fontFamily: 'Roboto, Montserrat, Poppins, Inter, Arial, sans-serif', fontSize: '2.5rem', letterSpacing: '0.03em'}}>miDESPENSA</h2>
         <div className="pantry-float-actions">
           <button
             className="pantry-float-btn scan"
@@ -239,7 +242,9 @@ const Pantry = ({ currentTab, onTabChange }) => {
         adding={adding}
         allIngredients={allIngredients}
       />
-      <BottomNavigation currentTab={currentTab} onTabChange={onTabChange} />
+          <BottomNavigation currentTab={currentTab} onTabChange={onTabChange} />
+        </div>
+      </div>
     </div>
   );
 };

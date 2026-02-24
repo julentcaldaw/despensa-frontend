@@ -1,3 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
+/* Responsive grid para lista de compra */
+.shopping-list-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .shopping-list-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .shopping-list-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .shopping-list-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Fondo general para las páginas de despensa y lista */
+.pantry-bg-main {
+  min-height: 100vh;
+  background: var(--background);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2.5rem 0 1.5rem 0;
+}
+
+/* Card principal de despensa y lista */
+.pantry-main-card {
+  background: #fff;
+  border-radius: 2.2rem;
+  box-shadow: 0 8px 32px 0 rgba(31,41,55,0.13), 0 1.5px 4px 0 rgba(31,41,55,0.08);
+  padding: 2.5rem 2rem 2rem 2rem;
+  width: 100%;
+  max-width: 1200px;
+  position: relative;
+  z-index: 1;
+  margin: 0 1rem;
+  animation: login-fade-in 0.8s cubic-bezier(.4,0,.2,1);
+}
+/* Fondo general para la página de usuario */
+.user-bg-main {
+  min-height: 100vh;
+  background: var(--background);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2.5rem 0 1.5rem 0;
+}
+
+/* Card principal de usuario */
+.user-main-card {
+  background: #fff;
+  border-radius: 2.2rem;
+  box-shadow: 0 8px 32px 0 rgba(31,41,55,0.13), 0 1.5px 4px 0 rgba(31,41,55,0.08);
+  padding: 2.5rem 2rem 2rem 2rem;
+  width: 100%;
+  max-width: 1200px;
+  position: relative;
+  z-index: 1;
+  margin: 0 1rem;
+  animation: login-fade-in 0.8s cubic-bezier(.4,0,.2,1);
+}
 /* Forzar que los enlaces de la navegación inferior no tengan subrayado */
 .bottom-nav a, .bottom-nav .nav-label {
   text-decoration: none !important;
@@ -65,7 +138,7 @@
 }
 /* ====== PANTRY GRID & CARDS ====== */
 .pantry-container {
-  max-width: 480px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem 2.5rem 1rem;
 }
@@ -133,8 +206,27 @@
 
 .pantry-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .pantry-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .pantry-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .pantry-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 /* Responsive: dos columnas hasta un mínimo, luego una */
@@ -192,7 +284,7 @@ body, .login-bg {
   background: var(--background);
   min-height: 100vh;
   margin: 0;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: 'Roboto', Arial, sans-serif;
   color: var(--text-main);
 }
 
@@ -370,7 +462,7 @@ body, .login-bg {
   padding-bottom: 90px;
 }
 .recipes-container {
-  max-width: 480px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem 1.5rem 1rem;
 }
@@ -774,8 +866,8 @@ body, .login-bg {
   border-radius: 1.5rem;
   box-shadow: 0 8px 32px 0 rgba(31,41,55,0.13);
   padding: 2rem 1.5rem 1.5rem 1.5rem;
-  min-width: 320px;
-  max-width: 95vw;
+  min-width: 400px;
+  max-width: 600px;
   position: relative;
   animation: login-fade-in 0.5s cubic-bezier(.4,0,.2,1);
 }
@@ -800,7 +892,7 @@ body, .login-bg {
   color: #b91c1c;
 }
 .pantry-modal-title {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
   text-align: center;
@@ -808,13 +900,13 @@ body, .login-bg {
 .pantry-modal-form {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 1.2rem;
 }
 .pantry-input {
   border: 1.5px solid #e5e7eb;
   border-radius: 12px;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  padding: 0.9rem 1.3rem;
+  font-size: 1.15rem;
   background: #f9fafb;
   color: var(--text-main);
   outline: none;

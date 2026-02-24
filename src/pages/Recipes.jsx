@@ -80,63 +80,68 @@ const Recipes = ({ currentTab, onTabChange }) => {
   const handleDifficultyChange = (e) => setSelectedDifficulty(e.target.value);
 
   return (
-    <div className="recipes-bg">
-      <div className="recipes-container">
-        <h2 className="recipes-title">Recetas sugeridas</h2>
-        <div className="recipes-filters">
-          <select className="recipes-select" value={selectedTime} onChange={handleTimeChange}>
-            <option value="">Tiempo</option>
-            <option value="15">15 min</option>
-            <option value="30">30 min</option>
-            <option value="45">45 min</option>
-            <option value="60">1 hora</option>
-          </select>
-          <select className="recipes-select" value={selectedDifficulty} onChange={handleDifficultyChange}>
-            <option value="">Dificultad</option>
-            <option value="facil">Fácil</option>
-            <option value="media">Media</option>
-            <option value="dificil">Difícil</option>
-          </select>
-        </div>
-        <form onSubmit={handleCustomSearch} className="recipes-form">
-          <input
-            type="text"
-            placeholder="Añade los ingredientes"
-            value={customIngredients}
-            onChange={e => setCustomIngredients(e.target.value)}
-            className="recipes-input"
-          />
-          <button type="submit" disabled={searching} className="recipes-btn">
-            {searching ? 'Buscando...' : 'Buscar'}
-          </button>
-        </form>
-        {loading ? (
-          <div className="recipes-loading">Cargando recetas...</div>
-        ) : error ? (
-          <div className="recipes-error">{error}</div>
-        ) : recipes.length === 0 ? (
-          <p className="recipes-empty">No se encontraron recetas.</p>
-        ) : (
-          <ul className="recipes-list">
-            {recipes.map((r) => (
-              <li key={r.id} className="recipes-card">
-                <div className="recipes-card-content">
-                  <img src={r.image} alt={r.title} className="recipes-card-img" />
-                  <div>
-                    <strong className="recipes-card-title">{r.title}</strong>
-                    <div className="recipes-card-ingredients">
-                      Usados: {r.usedIngredients?.map(i => i.name).join(', ') || '-'}<br />
-                      Faltan: {r.missedIngredients?.map(i => i.name).join(', ') || '-'}
+    <div className="pantry-bg-main">
+      <div className="pantry-main-card">
+        <div className="pantry-container">
+          <div className="pantry-header" style={{flexDirection: 'column', alignItems: 'center'}}>
+            <img src="/logoA.png" alt="Logo" style={{ maxWidth: '320px', width: '100%', height: 'auto', marginBottom: '0.7rem', marginTop: '-0.5rem' }} />
+           <h2 className="pantry-title" style={{textAlign: 'center', fontFamily: 'Roboto, Montserrat, Poppins, Inter, Arial, sans-serif', fontSize: '2.5rem', letterSpacing: '0.03em'}}>misRECETAS</h2>
+          </div>
+          <div className="recipes-filters">
+            <select className="recipes-select" value={selectedTime} onChange={handleTimeChange}>
+              <option value="">Tiempo</option>
+              <option value="15">15 min</option>
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+              <option value="60">1 hora</option>
+            </select>
+            <select className="recipes-select" value={selectedDifficulty} onChange={handleDifficultyChange}>
+              <option value="">Dificultad</option>
+              <option value="facil">Fácil</option>
+              <option value="media">Media</option>
+              <option value="dificil">Difícil</option>
+            </select>
+          </div>
+          <form onSubmit={handleCustomSearch} className="recipes-form">
+            <input
+              type="text"
+              placeholder="Añade los ingredientes"
+              value={customIngredients}
+              onChange={e => setCustomIngredients(e.target.value)}
+              className="recipes-input"
+            />
+            <button type="submit" disabled={searching} className="recipes-btn">
+              {searching ? 'Buscando...' : 'Buscar'}
+            </button>
+          </form>
+          {loading ? (
+            <div className="recipes-loading">Cargando recetas...</div>
+          ) : error ? (
+            <div className="recipes-error">{error}</div>
+          ) : recipes.length === 0 ? (
+            <p className="recipes-empty">No se encontraron recetas.</p>
+          ) : (
+            <ul className="recipes-list">
+              {recipes.map((r) => (
+                <li key={r.id} className="recipes-card">
+                  <div className="recipes-card-content">
+                    <img src={r.image} alt={r.title} className="recipes-card-img" />
+                    <div>
+                      <strong className="recipes-card-title">{r.title}</strong>
+                      <div className="recipes-card-ingredients">
+                        Usados: {r.usedIngredients?.map(i => i.name).join(', ') || '-'}<br />
+                        Faltan: {r.missedIngredients?.map(i => i.name).join(', ') || '-'}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <button onClick={() => handleFavorite(r)} className="recipes-fav-btn">❤️ Favorito</button>
-              </li>
-            ))}
-          </ul>
-        )}
+                  <button onClick={() => handleFavorite(r)} className="recipes-fav-btn">❤️ Favorito</button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <BottomNavigation currentTab={currentTab} onTabChange={onTabChange} />
+        </div>
       </div>
-      <BottomNavigation currentTab={currentTab} onTabChange={onTabChange} />
     </div>
   );
 };

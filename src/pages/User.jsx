@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ShoppingCart } from "lucide-react";
 import { authFetch } from "../utils/auth";
 // Hook para obtener datos del usuario autenticado
 function useUserProfile() {
@@ -65,8 +66,9 @@ export default function User() {
   // Puedes definir los iconos aquí para mapearlos según la key de stats/settings
   const statsIcons = {
     recetasGuardadas: <ChefHat size={38} className="user-stats-icon" />,
-    itemsDespensa: <Package size={38} className="user-stats-icon" />,
-    aportaciones: <Heart size={38} className="user-stats-icon" />,
+    despensa: <Package size={38} className="user-stats-icon" />,
+    listaCompra: <ShoppingCart size={38} className="user-stats-icon" />,
+    
   };
   const settingsIcons = {
     restricciones: <ShieldCheck size={22} />,
@@ -81,6 +83,7 @@ export default function User() {
 
   return (
     <>
+    
       <motion.div
         className="user-profile"
         initial="hidden"
@@ -97,6 +100,7 @@ export default function User() {
             />
           </div>
           <div className="user-info">
+            
             <div className="user-name">{user.name}</div>
             <div className="user-email">{user.email}</div>
           </div>
@@ -111,7 +115,13 @@ export default function User() {
 
         {/* Stats Grid */}
         <motion.div className="user-stats-grid" variants={containerVariants}>
-          {user.stats && Object.entries(user.stats).map(([key, value]) => (
+          {(
+            [
+              { key: 'recetasGuardadas', value: user.stats?.recetasGuardadas ?? 0 },
+              { key: 'despensa', value: user.pantryCount ?? 0 },
+              { key: 'listaCompra', value: user.shoppingListCount ?? 0 }
+            ]
+          ).map(({ key, value }) => (
             <motion.div
               key={key}
               className={`user-stats-card user-stats-card--primary`}
@@ -121,7 +131,9 @@ export default function User() {
             >
               <span className="user-stats-icon-bg">{statsIcons[key]}</span>
               <div className="user-stats-value">{value}</div>
-              <div className="user-stats-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</div>
+              <div className="user-stats-label">
+                {key === 'listaCompra' ? 'Lista de la compra' : key === 'despensa' ? 'Despensa' : key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+              </div>
             </motion.div>
           ))}
         </motion.div>

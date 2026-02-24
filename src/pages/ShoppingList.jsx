@@ -310,7 +310,9 @@ function ShoppingList({ currentTab, onTabChange }) {
 		// Botón para eliminar todos los comprados
 		const hayComprados = shoppingList.some(group => group.items.some(item => item.bought));
 		return (
-			<div className="pantry-container">
+			<div className="pantry-bg-main">
+				<div className="pantry-main-card">
+					<div className="pantry-container">
 				{/* {authError && (
 					<div className="pantry-error pantry-error-primary" style={{marginBottom:'1rem', textAlign:'center'}}>
 						{authError}
@@ -329,8 +331,9 @@ function ShoppingList({ currentTab, onTabChange }) {
 						setShops={setShops}
 					/>
 				)}
-				<div className="pantry-header">
-					<h2 className="pantry-title">Lista de compra</h2>
+				<div className="pantry-header" style={{flexDirection: 'column', alignItems: 'center'}}>
+								<img src="/logoA.png" alt="Logo" style={{ maxWidth: '320px', width: '100%', height: 'auto', marginBottom: '0.7rem', marginTop: '-0.5rem' }} />
+								<h2 className="pantry-title" style={{textAlign: 'center', fontFamily: 'Roboto, Montserrat, Poppins, Inter, Arial, sans-serif', fontSize: '2.5rem', letterSpacing: '0.03em'}}>miCOMPRA</h2>
 					<div className="pantry-float-actions">
 						<button className="pantry-float-btn add" title="Añadir ingrediente" onClick={() => setShowAdd(true)}>
 							+
@@ -433,7 +436,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 								return Object.entries(groupedByShop).map(([shop, items], shopIdx) => (
 									<div key={shop} style={{margin:'0 0 48px 0'}}>
 										<div style={{width:'100%', textAlign:'center', fontWeight:'bold', fontSize:'1.1em', margin:'24px 0 16px 0'}}>{shop}</div>
-										<div className="pantry-grid" style={{marginBottom:'16px'}}>
+										<div className="shopping-list-grid" style={{marginBottom:'16px'}}>
 											{items.map((item, itemIdx) => {
 												const cat = CATEGORY_MAP[item.category] || {};
 												return (
@@ -488,7 +491,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 							})()
 						) : (
 							displayedGroups.length > 0
-								? <div className="pantry-grid">
+								? <div className="shopping-list-grid">
 									{displayedGroups[0].items
 										.map((item, itemIdx) => {
 											const cat = CATEGORY_MAP[item.category] || {};
@@ -538,9 +541,11 @@ function ShoppingList({ currentTab, onTabChange }) {
 						)
 					)}
 				</AnimatePresence>
-				<BottomNavigation currentTab={currentTab} onTabChange={onTabChange} />
+						<BottomNavigation currentTab={currentTab} onTabChange={onTabChange} />
+					</div>
+				</div>
 			</div>
-	);
+		);
 }
 
 export default ShoppingList;
