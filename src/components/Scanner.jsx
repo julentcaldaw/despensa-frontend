@@ -25,7 +25,8 @@ const Scanner = ({ onScan, onClose }) => {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ barcode: decodedText })
+            body: JSON.stringify({ barcode: decodedText }),
+            credentials: 'include'
           });
           const data = await res.json();
           if (res.ok && data.name) {

@@ -13,7 +13,8 @@ const MyShops = ({ shops, setShops }) => {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`
-      }
+      },
+      credentials: 'include'
     })
       .then(res => res.json())
       .then(data => {
@@ -41,7 +42,8 @@ const MyShops = ({ shops, setShops }) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ shop: trimmedShop })
+      body: JSON.stringify({ shop: trimmedShop }),
+      credentials: 'include'
     })
       .then(async res => {
         if (res.status === 409) {
@@ -75,7 +77,8 @@ const MyShops = ({ shops, setShops }) => {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
-      }
+      },
+      credentials: 'include'
     })
       .then(res => res.json())
       .then(data => {
