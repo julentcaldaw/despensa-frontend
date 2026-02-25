@@ -52,17 +52,7 @@ const AddIngredientModal = ({
             <option value="condimentos_aceites">Condimentos y Aceites</option>
             <option value="snacks_extras">Snacks y Extras</option>
           </select>
-          <select
-            value={selectedShop}
-            onChange={e => setSelectedShop(e.target.value)}
-            className="pantry-input"
-            required
-            style={{marginTop:'0.5rem'}}
-          >
-            {shops && shops.map(shop => (
-              <option key={shop} value={shop}>{shop}</option>
-            ))}
-          </select>
+          {/* Eliminar el select de tiendas si no se usa */}
           {addError && (
             <div className="pantry-error pantry-error-primary">{addError}</div>
           )}

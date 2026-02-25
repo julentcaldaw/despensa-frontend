@@ -1,7 +1,11 @@
+
 import React, { useEffect, useState } from "react";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, User as UserIcon, Heart, ChefHat, Package, LogOut, Settings, Bell, ArrowRight, Leaf, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
+import { useNavigate } from 'react-router-dom';
+import BottomNavigation from "../components/BottomNavigation";
 import { authFetch } from "../utils/auth";
-// Hook para obtener datos del usuario autenticado
+
 function useUserProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,23 +32,6 @@ function useUserProfile() {
   }, []);
   return { user, loading, error };
 }
-import { motion } from "framer-motion";
-import BottomNavigation from "../components/BottomNavigation";
-import {
-  User as UserIcon,
-  Heart,
-  ChefHat,
-  Package,
-  LogOut,
-  Settings,
-  Bell,
-  ArrowRight,
-  Leaf,
-  ShieldCheck
-} from "lucide-react";
-
-
-
 const containerVariants = {
   hidden: {},
   show: {
@@ -60,10 +47,11 @@ const itemVariants = {
 };
 
 
+
 export default function User() {
   const { user, loading, error } = useUserProfile();
+  const navigate = useNavigate();
 
-  // Puedes definir los iconos aquí para mapearlos según la key de stats/settings
   const statsIcons = {
     recetasGuardadas: <ChefHat size={38} className="user-stats-icon" />,
     despensa: <Package size={38} className="user-stats-icon" />,
@@ -81,16 +69,19 @@ export default function User() {
   if (error) return <div className="user-profile">Error: {error}</div>;
   if (!user) return null;
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login', { replace: true });
+  };
+
   return (
     <>
-    
       <motion.div
         className="user-profile"
         initial="hidden"
         animate="show"
         variants={containerVariants}
       >
-        {/* Header */}
         <motion.div className="user-header" variants={itemVariants}>
           <div className="user-avatar-wrapper">
             <img
@@ -100,7 +91,6 @@ export default function User() {
             />
           </div>
           <div className="user-info">
-            
             <div className="user-name">{user.name}</div>
             <div className="user-email">{user.email}</div>
           </div>
@@ -113,15 +103,12 @@ export default function User() {
           </motion.button>
         </motion.div>
 
-        {/* Stats Grid */}
         <motion.div className="user-stats-grid" variants={containerVariants}>
-          {(
-            [
-              { key: 'recetasGuardadas', value: user.stats?.recetasGuardadas ?? 0 },
-              { key: 'despensa', value: user.pantryCount ?? 0 },
-              { key: 'listaCompra', value: user.shoppingListCount ?? 0 }
-            ]
-          ).map(({ key, value }) => (
+          {[
+            { key: 'recetasGuardadas', value: user.stats?.recetasGuardadas ?? 0 },
+            { key: 'despensa', value: user.pantryCount ?? 0 },
+            { key: 'listaCompra', value: user.shoppingListCount ?? 0 }
+          ].map(({ key, value }) => (
             <motion.div
               key={key}
               className={`user-stats-card user-stats-card--primary`}
@@ -138,7 +125,6 @@ export default function User() {
           ))}
         </motion.div>
 
-        {/* Settings List */}
         <motion.div className="user-settings-list" variants={containerVariants}>
           {user.settings && user.settings.map((item) => (
             <motion.button
@@ -146,6 +132,7 @@ export default function User() {
               className={`user-settings-item${item.key === 'logout' ? " danger" : ""}`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
+              onClick={item.key === 'logout' ? handleLogout : undefined}
             >
               <span
                 className={`user-settings-icon user-settings-icon--${item.key === 'logout' ? 'danger' : 'primary'}`}

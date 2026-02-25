@@ -92,6 +92,7 @@ const Login = () => {
           >
             ¿No tienes cuenta? Regístrate
           </button>
+          
         </form>
       </div>
     </div>

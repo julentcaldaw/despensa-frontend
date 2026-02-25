@@ -1,31 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
-/* Responsive grid para lista de compra */
-.shopping-list-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
-@media (max-width: 1024px) {
-  .shopping-list-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .shopping-list-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .shopping-list-grid {
-    grid-template-columns: 1fr;
-  }
-}
-/* Fondo general para las páginas de despensa y lista */
 .pantry-bg-main {
   min-height: 100vh;
   background: var(--background);
@@ -35,7 +10,6 @@
   padding: 2.5rem 0 1.5rem 0;
 }
 
-/* Card principal de despensa y lista */
 .pantry-main-card {
   background: #fff;
   border-radius: 2.2rem;
@@ -48,7 +22,6 @@
   margin: 0 1rem;
   animation: login-fade-in 0.8s cubic-bezier(.4,0,.2,1);
 }
-/* Fondo general para la página de usuario */
 .user-bg-main {
   min-height: 100vh;
   background: var(--background);
@@ -58,7 +31,6 @@
   padding: 2.5rem 0 1.5rem 0;
 }
 
-/* Card principal de usuario */
 .user-main-card {
   background: #fff;
   border-radius: 2.2rem;
@@ -71,7 +43,6 @@
   margin: 0 1rem;
   animation: login-fade-in 0.8s cubic-bezier(.4,0,.2,1);
 }
-/* Forzar que los enlaces de la navegación inferior no tengan subrayado */
 .bottom-nav a, .bottom-nav .nav-label {
   text-decoration: none !important;
 }
@@ -93,9 +64,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px 0 rgba(31,41,55,0.08);
 }
- 
-/* Mensaje de error en color primario */
-.pantry-error-primary {
+ .pantry-error-primary {
   color: var(--primary);
   font-weight: bold;
   text-align: center;
@@ -229,7 +198,6 @@
   }
 }
 
-/* Responsive: dos columnas hasta un mínimo, luego una */
 @media (max-width: 340px) {
   .pantry-grid {
     grid-template-columns: 1fr;
@@ -237,7 +205,8 @@
 }
 
 .pantry-item {
-  aspect-ratio: 1 / 1;
+  width: 250px;
+  height: 100px;
   border-radius: 24px;
   padding: 16px;
   position: relative;
@@ -246,6 +215,7 @@
   box-shadow: 0 2px 8px 0 rgba(31,41,55,0.07);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
+  -ms-flex-direction: column;
   flex-direction: column;
   justify-content: flex-end;
 }
@@ -254,7 +224,6 @@
   box-shadow: 0 8px 24px 0 rgba(31,41,55,0.13);
 }
 
-/* === ROOT === */
 :root {
   --bg-dairy: #eff6ff;
   --text-dairy: #1d4ed8;
@@ -277,9 +246,6 @@
   --text-secondary: #9ca3af;
 }
 
-
-
-/* === LOGIN === */
 body, .login-bg {
   background: var(--background);
   min-height: 100vh;
@@ -624,11 +590,14 @@ body, .login-bg {
 .pantry-item-title {
   font-weight: 700;
   font-size: 1.6rem;
-  margin-bottom: 5.5rem;
-  margin-left: 1rem;
+  margin-bottom: 0.5rem;
   z-index: 1;
   color: inherit;
   display: flex;
+  padding: 4px 8px;
+  position: absolute;
+  bottom: 30px;
+  left: 16px;
 }
 .pantry-item-category {
   position: absolute;
@@ -665,16 +634,6 @@ body, .login-bg {
 .pantry-item-delete:hover {
   background: #fee2e2;
   color: #b91c1c;
-}
-
-:root {
-  --primary: #dbba38;
-  --primary-hover: #f3c623;
-  --secondary:#f8f1d3;
-  --background: #f9fafb;
-  --surface: #ffffff;
-  --text-main: #1f2937;
-  --text-secondary: #9ca3af;
 }
 
 body, .login-bg {

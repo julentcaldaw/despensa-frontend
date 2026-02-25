@@ -1,3 +1,42 @@
+
+
+import React, { useEffect, useState } from 'react';
+import { Plus, Search, Trash2, Leaf, Drumstick, Egg, Soup, Cookie, ScanLine, Salad, Fish, Coffee } from 'lucide-react';
+import { authFetch } from '../utils/auth';
+import AddIngredient from '../components/AddIngredient';
+import Scanner from '../components/Scanner';
+import { AnimatePresence, motion } from 'framer-motion';
+import BottomNavigation from '../components/BottomNavigation';
+
+const CATEGORY_MAP = {
+  lacteos_huevos: { class: 'category-dairy', icon: <Egg /> },
+  frutas_verduras: { class: 'category-veg', icon: <Leaf /> },
+  carnes_pescados: { class: 'category-meat', icon: <Fish /> },
+  despensa_granos: { class: 'category-pantry', icon: <Coffee /> },
+  condimentos_aceites: { class: 'category-condiment', icon: <Salad /> },
+  snacks_extras: { class: 'category-snack', icon: <Cookie /> }
+};
+
+
+const Pantry = ({ currentTab, onTabChange }) => {
+  const [ingredients, setIngredients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [allIngredients, setAllIngredients] = useState([]);
+  const [search, setSearch] = useState('');
+  const [showAdd, setShowAdd] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scanProduct, setScanProduct] = useState(null);
+  const [showAddedMsg, setShowAddedMsg] = useState(false);
+  const [scanCategory, setScanCategory] = useState('frutas_verduras');
+  const [showCategorySelector, setShowCategorySelector] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
+
+  const [selectedIngredient, setSelectedIngredient] = useState('');
+  const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras');
+  const [addError, setAddError] = useState('');
+
   const handleDelete = async (id) => {
     try {
       setLoading(true);
@@ -28,41 +67,6 @@
       setLoading(false);
     }
   };
-import { Plus, Search, Trash2, Leaf, Drumstick, Egg, Soup, Cookie, ScanLine, Salad, Fish, Coffee } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { authFetch } from '../utils/auth';
-import AddIngredient from '../components/AddIngredient';
-import Scanner from '../components/Scanner';
-import { AnimatePresence, motion } from 'framer-motion';
-import BottomNavigation from '../components/BottomNavigation';
-
-const CATEGORY_MAP = {
-  lacteos_huevos: { class: 'category-dairy', icon: <Egg /> },
-  frutas_verduras: { class: 'category-veg', icon: <Leaf /> },
-  carnes_pescados: { class: 'category-meat', icon: <Fish /> },
-  despensa_granos: { class: 'category-pantry', icon: <Coffee /> },
-  condimentos_aceites: { class: 'category-condiment', icon: <Salad /> },
-  snacks_extras: { class: 'category-snack', icon: <Cookie /> }
-};
-
-const Pantry = ({ currentTab, onTabChange }) => {
-  const [ingredients, setIngredients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [allIngredients, setAllIngredients] = useState([]);
-  const [search, setSearch] = useState('');
-  const [showAdd, setShowAdd] = useState(false);
-  const [showScanner, setShowScanner] = useState(false);
-  const [scanProduct, setScanProduct] = useState(null);
-  const [showAddedMsg, setShowAddedMsg] = useState(false);
-  const [scanCategory, setScanCategory] = useState('frutas_verduras');
-  const [showCategorySelector, setShowCategorySelector] = useState(false);
-  const [adding, setAdding] = useState(false);
-  const [selectedDifficulty, setSelectedDifficulty] = useState('');
-
-  const [selectedIngredient, setSelectedIngredient] = useState('');
-  const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras');
-  const [addError, setAddError] = useState('');
 
   const fetchAllIngredients = async () => {
     try {

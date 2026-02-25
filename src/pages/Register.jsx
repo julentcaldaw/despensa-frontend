@@ -90,6 +90,14 @@ const Register = () => {
           >
             {loading ? 'Registrando...' : 'Registrarse'}
           </button>
+          <button
+            type="button"
+            onClick={() => navigate('/login')}
+            className="login-register-link"
+            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}
+          >
+            ¿Ya tienes cuenta? Inicia sesión
+          </button>
         </form>
       </div>
     </div>

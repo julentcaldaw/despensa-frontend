@@ -16,8 +16,8 @@ const CATEGORY_MAP = {
 };
 
 import { authFetch } from '../utils/auth';
+import '../shoppingListGrid.css';
 function ShoppingList({ currentTab, onTabChange }) {
-				// Elimina todos los ingredientes comprados
 				const handleDeleteBought = async () => {
 					const boughtItems = shoppingList.flatMap(group =>
 						group.items.filter(item => item.bought && item.id)
@@ -32,7 +32,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 							setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 							return;
 						}
-						// Eliminar cada ingrediente comprado
 						for (const item of boughtItems) {
 							await authFetch(`/listacompra/${item.id}`, {
 								method: 'DELETE',
@@ -66,7 +65,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 				}
 				if (!response.ok) throw new Error('Error al cargar la lista de compra');
 				const data = await response.json();
-				// Ahora data es un array de objetos { shop, items }
 				setShoppingList(Array.isArray(data) ? data : []);
 			} catch (err) {
 				setShoppingList([]);
@@ -178,7 +176,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 }
 
 	const handleBought = async (itemId) => {
-	// Busca el grupo y el item por id
 	let foundGroupIdx = -1;
 	let foundItemIdx = -1;
 	for (let gIdx = 0; gIdx < shoppingList.length; gIdx++) {
@@ -197,12 +194,9 @@ function ShoppingList({ currentTab, onTabChange }) {
 	const group = shoppingList[foundGroupIdx];
 	const item = group.items[foundItemIdx];
 	if (!item || !item.id) {
-		// eslint-disable-next-line no-console
-		console.error('No se puede marcar como comprado: ingrediente sin id. Objeto:', item);
 		setAuthError('No se puede marcar este ingrediente como comprado porque no tiene id.');
 		return;
 	}
-	// eslint-disable-next-line no-console
 	console.log('Marcando como comprado:', item, 'ID enviado al backend:', item.id);
 	try {
 		const token = localStorage.getItem('token');
@@ -234,12 +228,10 @@ function ShoppingList({ currentTab, onTabChange }) {
 		}
 		const item = group.items[itemIdx];
 		const itemId = item.id;
-		// Log para depuración
-		// eslint-disable-next-line no-console
+		
 		console.log('Intentando eliminar:', { itemId, item });
 		if (!itemId) {
-			// Mostrar el objeto problemático en consola para depuración
-			// eslint-disable-next-line no-console
+			
 			console.error('No se puede eliminar: ingrediente sin id. Objeto:', item);
 			setAuthError('No se puede eliminar este ingrediente porque no tiene id. Consulta la consola para más detalles.');
 			return;
@@ -250,7 +242,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
-			// Llamada DELETE al backend
 			const response = await authFetch(`/listacompra/${itemId}`, {
 				method: 'DELETE',
 				headers: {
@@ -266,7 +257,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('Error al eliminar el ingrediente.');
 				return;
 			}
-			// Sincroniza con backend tras eliminar
 			await fetchShoppingList();
 		} catch (err) {
 			setAuthError('Error de conexión al eliminar ingrediente.');
@@ -306,23 +296,12 @@ function ShoppingList({ currentTab, onTabChange }) {
 	}
 
 
-		// ...existing code...
-		// Botón para eliminar todos los comprados
 		const hayComprados = shoppingList.some(group => group.items.some(item => item.bought));
 		return (
 			<div className="pantry-bg-main">
 				<div className="pantry-main-card">
 					<div className="pantry-container">
-				{/* {authError && (
-					<div className="pantry-error pantry-error-primary" style={{marginBottom:'1rem', textAlign:'center'}}>
-						{authError}
-						<button className="btn-primary" style={{marginLeft:'1rem'}} onClick={() => window.location.reload()}>Reintentar</button>
-						<button className="btn-primary" style={{marginLeft:'1rem'}} onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>Cerrar sesión</button>
-					</div>
-				)}
-				<button className="btn-primary" style={{marginBottom:'1rem'}} onClick={() => setShowUser(true)}>
-					Perfil de usuario
-				</button> */}
+				
 				{showUser && (
 					<User
 						currentTab={currentTab}
@@ -416,14 +395,12 @@ function ShoppingList({ currentTab, onTabChange }) {
 						</>
 					)}
 				</div>
-				{/* Bloques de tienda, cada uno con su propio grid */}
 				<AnimatePresence>
 					{displayedGroups.length === 0 ? (
 						<div className="pantry-empty">No hay ingredientes en la lista.</div>
 					) : (
 						selectedShopFilter === 'Todas' ? (
 							(() => {
-								// Agrupar por tienda
 								const groupedByShop = {};
 								displayedGroups.forEach((group, shopIdx) => {
 									groupedByShop[group.shop] = group.items.map((item, itemIdx) => ({
@@ -532,7 +509,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 													>
 														<ShoppingCart size={18} color="#e74c3c" />
 													</button>
-													{/* {item.bought && <span className="pantry-item-bought-indicator">Comprado</span>} */}
 												</motion.div>
 											);
 										})}
