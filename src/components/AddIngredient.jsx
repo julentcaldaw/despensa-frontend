@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 const AddIngredientModal = ({
@@ -29,7 +29,24 @@ const AddIngredientModal = ({
             list="ingredients-list"
             placeholder="Nombre del ingrediente"
             value={selectedIngredient}
-            onChange={e => setSelectedIngredient(e.target.value)}
+            onChange={async e => {
+              setSelectedIngredient(e.target.value);
+              if (e.target.value.trim().length > 1) {
+                try {
+                  const res = await fetch(`/api/ingredients/category?name=${encodeURIComponent(e.target.value)}`);
+                  if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.category) {
+                      setIngredientCategory(data.category);
+                    } else {
+                      // Si no existe, no autocompletar
+                    }
+                  }
+                } catch (err) {
+                  // Silenciar error
+                }
+              }
+            }}
             required
             className="pantry-input"
             autoFocus
@@ -52,6 +69,10 @@ const AddIngredientModal = ({
             <option value="condimentos_aceites">Condimentos y Aceites</option>
             <option value="snacks_extras">Snacks y Extras</option>
           </select>
+          {/* Mensaje si no existe la categoría */}
+          {selectedIngredient && ingredientCategory === '' && (
+            <div className="pantry-error pantry-error-primary">No se encontró la categoría, selecciónala manualmente.</div>
+          )}
           {/* Eliminar el select de tiendas si no se usa */}
           {addError && (
             <div className="pantry-error pantry-error-primary">{addError}</div>
