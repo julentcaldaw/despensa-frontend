@@ -16,8 +16,10 @@ const CATEGORY_MAP = {
 };
 
 import { authFetch } from '../utils/auth';
+import { useAuth } from '../utils/AuthContext';
 import '../shoppingListGrid.css';
 function ShoppingList({ currentTab, onTabChange }) {
+	const { user, loading, error } = useAuth();
 				const handleDeleteBought = async () => {
 					const boughtItems = shoppingList.flatMap(group =>
 						group.items.filter(item => item.bought && item.id)
@@ -49,6 +51,10 @@ function ShoppingList({ currentTab, onTabChange }) {
 			const [addIngredientError, setAddIngredientError] = useState("");
 		const [selectedShopFilter, setSelectedShopFilter] = useState('Todas');
 	const [shoppingList, setShoppingList] = useState([]);
+		if (!user && !loading) {
+			return <div className="user-profile">Inicia sesión para ver tu lista de la compra.</div>;
+		}
+
 		const fetchShoppingList = async () => {
 			try {
 				const token = localStorage.getItem('token');

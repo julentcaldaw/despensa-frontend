@@ -15,7 +15,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError(''); // Si tienes un estado local renombrado, cámbialo aquí
     try {
       const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
@@ -28,7 +28,7 @@ const Login = () => {
       setToken(data.token);
       navigate('/despensa');
     } catch (err) {
-      setError(err.message);
+      setError(err.message); // Si tienes un estado local renombrado, cámbialo aquí
     } finally {
       setLoading(false);
     }

@@ -12,15 +12,17 @@ import {
   Plus, Search, Trash2, Leaf, Egg, Cookie, ScanLine, Salad, Fish, Coffee
 } from 'lucide-react';
 import { authFetch } from '../utils/auth';
+import { useAuth } from '../utils/AuthContext';
 import AddIngredientPantry from '../components/AddIngredientPantry';
 import Scanner from '../components/Scanner';
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNavigation from '../components/BottomNavigation';
 
 const Pantry = ({ currentTab, onTabChange }) => {
+  const { user, loading, error } = useAuth();
   const [ingredients, setIngredients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [loadingIngredients, setLoadingIngredients] = useState(true);
+  const [errorIngredients, setErrorIngredients] = useState('');
   const [allIngredients, setAllIngredients] = useState([]);
   const [search, setSearch] = useState('');
   const [showAdd, setShowAdd] = useState(false);
@@ -35,14 +37,18 @@ const Pantry = ({ currentTab, onTabChange }) => {
   const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras');
   const [addError, setAddError] = useState('');
 
+  if (!user && !loading) {
+    return <div className="user-profile">Inicia sesión para ver tu despensa.</div>;
+  }
+
   const handleDelete = async (id) => {
     try {
-      setLoading(true);
-      setError('');
+      setLoadingIngredients(true);
+      setErrorIngredients('');
       const token = localStorage.getItem('token');
       if (!token) {
-        setError('No hay sesión activa. Por favor, inicia sesión.');
-        setLoading(false);
+        setErrorIngredients('No hay sesión activa. Por favor, inicia sesión.');
+        setLoadingIngredients(false);
         return;
       }
       const response = await authFetch(`/pantry/${id}`, {
@@ -54,15 +60,15 @@ const Pantry = ({ currentTab, onTabChange }) => {
       });
       if (!response.ok) {
         const data = await response.json();
-        setError(data.message || 'No se pudo eliminar el ingrediente');
-        setLoading(false);
+        setErrorIngredients(data.message || 'No se pudo eliminar el ingrediente');
+        setLoadingIngredients(false);
         return;
       }
       fetchPantry();
     } catch (err) {
-      setError(err.message || 'Error de conexión al eliminar ingrediente.');
+      setErrorIngredients(err.message || 'Error de conexión al eliminar ingrediente.');
     } finally {
-      setLoading(false);
+      setLoadingIngredients(false);
     }
   };
 
@@ -73,22 +79,22 @@ const Pantry = ({ currentTab, onTabChange }) => {
       const data = await response.json();
       setAllIngredients(data);
     } catch (err) {
-      setError(err.message);
+      setErrorIngredients(err.message);
     }
   };
 
   const fetchPantry = async () => {
-    setLoading(true);
-    setError('');
+    setLoadingIngredients(true);
+    setErrorIngredients('');
     try {
       const response = await authFetch('/pantry');
       if (!response.ok) throw new Error('Error al cargar el inventario');
       const data = await response.json();
       setIngredients(data);
     } catch (err) {
-      setError(err.message);
+      setErrorIngredients(err.message);
     } finally {
-      setLoading(false);
+      setLoadingIngredients(false);
     }
   };
 
@@ -226,9 +232,9 @@ const Pantry = ({ currentTab, onTabChange }) => {
           })}
         </AnimatePresence>
       </div>
-      {loading && <div className="pantry-loading">Cargando inventario...</div>}
+      {loadingIngredients && <div className="pantry-loading">Cargando inventario...</div>}
       {error && <div className="pantry-error">{error}</div>}
-      {filteredIngredients.length === 0 && !loading && !error && (
+      {filteredIngredients.length === 0 && !loadingIngredients && !errorIngredients && (
         <div className="pantry-empty">No tienes ingredientes en tu inventario.</div>
       )}
 

@@ -5,34 +5,9 @@ import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
 import DietRestrictions from './DietRestrictions';
 import BottomNavigation from "../components/BottomNavigation";
-import { authFetch } from "../utils/auth";
+import { useAuth } from "../utils/AuthContext";
 
-function useUserProfile() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    async function fetchUser() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await authFetch("/usuario");
-        if (!res.ok) throw new Error("No se pudo cargar el perfil");
-        const data = await res.json();
-        if (isMounted) setUser(data);
-      } catch (err) {
-        if (isMounted) setError(err.message);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-    fetchUser();
-    return () => { isMounted = false; };
-  }, []);
-  return { user, loading, error };
-}
+// useUserProfile eliminado, ahora usamos useAuth
 const containerVariants = {
   hidden: {},
   show: {
@@ -50,15 +25,14 @@ const itemVariants = {
 
 
 export default function User() {
-  const { user, loading, error } = useUserProfile();
+  const { user, loading, error, logout } = useAuth();
   const navigate = useNavigate();
   const [showRestrictions, setShowRestrictions] = useState(false);
 
   const statsIcons = {
-    recetasGuardadas: <ChefHat size={38} className="user-stats-icon" />,
-    despensa: <Package size={38} className="user-stats-icon" />,
-    listaCompra: <ShoppingCart size={38} className="user-stats-icon" />,
-    
+    recetasGuardadas: <ChefHat size={35} className="user-stats-icon" />,
+    despensa: <Package size={35} className="user-stats-icon" />,
+    listaCompra: <ShoppingCart size={35} className="user-stats-icon" />,
   };
   const settingsIcons = {
     restricciones: <ShieldCheck size={22} />,
@@ -70,24 +44,6 @@ export default function User() {
   if (loading) return <div className="user-profile">Cargando perfil...</div>;
   if (error) return <div className="user-profile">Error: {error}</div>;
   if (!user) return null;
-  if (showRestrictions) {
-    return (
-      <DietRestrictions
-        onBack={() => setShowRestrictions(false)}
-        initialSelected={user.restrictions || []}
-        onSave={(restrictions) => {
-          // Aquí puedes hacer un fetch para guardar restricciones si lo deseas
-          setShowRestrictions(false);
-        }}
-      />
-    );
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login', { replace: true });
-  };
-
   return (
     <>
       <motion.div
@@ -122,21 +78,29 @@ export default function User() {
             { key: 'recetasGuardadas', value: user.stats?.recetasGuardadas ?? 0 },
             { key: 'despensa', value: user.pantryCount ?? 0 },
             { key: 'listaCompra', value: user.shoppingListCount ?? 0 }
-          ].map(({ key, value }) => (
-            <motion.div
-              key={key}
-              className={`user-stats-card user-stats-card--primary`}
-              variants={itemVariants}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span className="user-stats-icon-bg">{statsIcons[key]}</span>
-              <div className="user-stats-value">{value}</div>
-              <div className="user-stats-label">
-                {key === 'listaCompra' ? 'Lista de la compra' : key === 'despensa' ? 'Despensa' : key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-              </div>
-            </motion.div>
-          ))}
+          ].map(({ key, value }) => {
+            const handleCardClick = () => {
+              if (key === 'despensa') navigate('/despensa');
+              if (key === 'listaCompra') navigate('/listacompra');
+            };
+            return (
+              <motion.div
+                key={key}
+                className={`user-stats-card user-stats-card--primary`}
+                variants={itemVariants}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={key === 'despensa' || key === 'listaCompra' ? handleCardClick : undefined}
+                style={key === 'despensa' || key === 'listaCompra' ? { cursor: 'pointer' } : {}}
+              >
+                {/* <span className="user-stats-icon-bg">{statsIcons[key]}</span> */}
+                <div className="user-stats-value">{value}</div>
+                <div className="user-stats-label">
+                  {key === 'listaCompra' ? 'Lista de la compra' : key === 'despensa' ? 'Despensa' : key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         <motion.div className="user-settings-list" variants={containerVariants}>
@@ -148,7 +112,7 @@ export default function User() {
               whileTap={{ scale: 0.97 }}
               onClick={
                 item.key === 'logout'
-                  ? handleLogout
+                  ? logout
                   : item.key === 'restricciones'
                   ? () => setShowRestrictions(true)
                   : undefined

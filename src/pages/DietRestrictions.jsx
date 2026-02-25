@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../utils/AuthContext';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, Milk, Wheat, Nut, Fish, Egg, Check, Sprout, WheatOff, MilkOff, Cow, Flame, Droplets, HeartPulse, Filter, Apple, Droplet, Salt, TestTube, Leaf, Trash2
@@ -44,11 +45,16 @@ const cardVariants = {
 };
 
 export default function DietRestrictions({ onBack, onSave }) {
+  const { user, loading, error } = useAuth();
   const [allRestrictions, setAllRestrictions] = useState([]);
   const [selected, setSelected] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingRestrictions, setLoadingRestrictions] = useState(true);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  if (!user && !loading) {
+    return <div className="user-profile">Inicia sesión para ver tus restricciones.</div>;
+  }
 
   useEffect(() => {
     fetch('/api/enum/diet_restriction')
@@ -65,11 +71,11 @@ export default function DietRestrictions({ onBack, onSave }) {
         .then(res => res.json())
         .then(data => {
           setSelected(Array.isArray(data.restrictions) ? data.restrictions : []);
-          setLoading(false);
+          setLoadingRestrictions(false);
         })
-        .catch(() => setLoading(false));
+        .catch(() => setLoadingRestrictions(false));
     } else {
-      setLoading(false);
+      setLoadingRestrictions(false);
     }
   }, []);
 
@@ -109,7 +115,7 @@ export default function DietRestrictions({ onBack, onSave }) {
     }
   };
 
-  if (loading) {
+  if (loadingRestrictions) {
     return <div className="pantry-bg-main"><div className="pantry-main-card"><p>Cargando restricciones...</p></div></div>;
   }
 

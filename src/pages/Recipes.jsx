@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../utils/auth';
+import { useAuth } from '../utils/AuthContext';
 import BottomNavigation from '../components/BottomNavigation';
 
 const Recipes = ({ currentTab, onTabChange }) => {
+  const { user, loading, error } = useAuth();
+  if (!user && !loading) {
+    return <div className="user-profile">Inicia sesión para ver tus recetas.</div>;
+  }
+
   const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+    const [loadingRecipes, setLoadingRecipes] = useState(true);
+    const [errorRecipes, setErrorRecipes] = useState('');
   const [customIngredients, setCustomIngredients] = useState('');
   const [searching, setSearching] = useState(false);
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
   const fetchRecipes = async () => {
-    setLoading(true);
-    setError('');
+      setLoadingRecipes(true);
+      setErrorRecipes('');
     try {
       const response = await authFetch('/recipes');
       if (!response.ok) throw new Error('Error al buscar recetas');
@@ -22,13 +28,13 @@ const Recipes = ({ currentTab, onTabChange }) => {
         setRecipes(data);
       } else {
         setRecipes([]);
-        setError('La respuesta del servidor no es válida.');
+          setErrorRecipes('La respuesta del servidor no es válida.');
       }
     } catch (err) {
-      setError(err.message);
+        setErrorRecipes(err.message);
       setRecipes([]);
     } finally {
-      setLoading(false);
+        setLoadingRecipes(false);
     }
   };
 
@@ -39,7 +45,7 @@ const Recipes = ({ currentTab, onTabChange }) => {
   const handleCustomSearch = async (e) => {
     e.preventDefault();
     setSearching(true);
-    setError('');
+      setErrorRecipes('');
     try {
       const ingredientsArr = customIngredients.split(',').map(i => i.trim()).filter(Boolean);
       const response = await authFetch('/recipes', {
@@ -53,10 +59,10 @@ const Recipes = ({ currentTab, onTabChange }) => {
         setRecipes(data);
       } else {
         setRecipes([]);
-        setError('La respuesta del servidor no es válida.');
+          setErrorRecipes('La respuesta del servidor no es válida.');
       }
     } catch (err) {
-      setError(err.message);
+        setErrorRecipes(err.message);
     } finally {
       setSearching(false);
     }
@@ -114,10 +120,10 @@ const Recipes = ({ currentTab, onTabChange }) => {
               {searching ? 'Buscando...' : 'Buscar'}
             </button>
           </form>
-          {loading ? (
+          {loadingRecipes ? (
             <div className="recipes-loading">Cargando recetas...</div>
-          ) : error ? (
-            <div className="recipes-error">{error}</div>
+          ) : errorRecipes ? (
+            <div className="recipes-error">{errorRecipes}</div>
           ) : recipes.length === 0 ? (
             <p className="recipes-empty">No se encontraron recetas.</p>
           ) : (

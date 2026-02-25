@@ -156,6 +156,8 @@
   --text-snack: #be185d;
   --primary: #dbba38;
   --primary-hover: #f3c623;
+  --primary-soft: #fff7d2;
+  --primary-dark: #b39d48;
   --secondary:#f8f1d3;
   --background: #f9fafb;
   --surface: #ffffff;
@@ -1220,7 +1222,7 @@ body, .login-bg {
 }
 
 .user-edit-btn {
-  background: var(--secondary);
+  background: var(--primary-soft);
   color: var(--primary);
   border: none;
   border-radius: 1rem;
@@ -1241,7 +1243,7 @@ body, .login-bg {
 
 .user-stats-card {
   position: relative;
-  background: var(--background);
+  background: var(--primary-soft);
   border-radius: 1.2rem;
   box-shadow: 0 1px 6px 0 rgba(31,41,55,0.06);
   padding: 1.1rem 0.5rem 0.7rem 0.5rem;
@@ -1251,23 +1253,18 @@ body, .login-bg {
 }
 
 .user-stats-card--primary {
-  background: var(--primary-hover);
-}
-.user-stats-card--secondary {
-  background: var(--secondary);
-}
-.user-stats-card--surface {
-  background: var(--surface);
+  background: var(--primary-soft);
 }
 
-.user-stats-icon-bg {
+/* .user-stats-icon-bg {
   position: absolute;
   top: 10px;
   right: 10px;
-  opacity: 0.13;
+  opacity: 0.5;
   z-index: 0;
   pointer-events: none;
-}
+  color: var(--primary);
+} */
 
 .user-stats-value {
   font-size: 1.5rem;
@@ -1279,7 +1276,7 @@ body, .login-bg {
 
 .user-stats-label {
   font-size: 0.98rem;
-  color: var(--text-secondary);
+  color: var(--primary);
   margin-top: 0.2rem;
   z-index: 1;
   position: relative;
@@ -1317,14 +1314,14 @@ body, .login-bg {
   align-items: center;
   justify-content: center;
   border-radius: 0.7rem;
-  background: var(--secondary);
+  background: var(--primary-soft);
   color: var(--primary);
   min-width: 32px;
   min-height: 32px;
 }
 
 .user-settings-icon--primary {
-  background: var(--secondary);
+  background: var(--primary-soft);
   color: var(--primary);
 }
 .user-settings-icon--danger {
