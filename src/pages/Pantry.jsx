@@ -1,13 +1,3 @@
-
-
-import React, { useEffect, useState } from 'react';
-import { Plus, Search, Trash2, Leaf, Drumstick, Egg, Soup, Cookie, ScanLine, Salad, Fish, Coffee } from 'lucide-react';
-import { authFetch } from '../utils/auth';
-import AddIngredientPantry from '../components/AddIngredientPantry';
-import Scanner from '../components/Scanner';
-import { AnimatePresence, motion } from 'framer-motion';
-import BottomNavigation from '../components/BottomNavigation';
-
 const CATEGORY_MAP = {
   lacteos_huevos: { class: 'category-dairy', icon: <Egg /> },
   frutas_verduras: { class: 'category-veg', icon: <Leaf /> },
@@ -17,6 +7,15 @@ const CATEGORY_MAP = {
   snacks_extras: { class: 'category-snack', icon: <Cookie /> }
 };
 
+import React, { useEffect, useState } from 'react';
+import {
+  Plus, Search, Trash2, Leaf, Egg, Cookie, ScanLine, Salad, Fish, Coffee
+} from 'lucide-react';
+import { authFetch } from '../utils/auth';
+import AddIngredientPantry from '../components/AddIngredientPantry';
+import Scanner from '../components/Scanner';
+import { AnimatePresence, motion } from 'framer-motion';
+import BottomNavigation from '../components/BottomNavigation';
 
 const Pantry = ({ currentTab, onTabChange }) => {
   const [ingredients, setIngredients] = useState([]);
@@ -32,7 +31,6 @@ const Pantry = ({ currentTab, onTabChange }) => {
   const [showCategorySelector, setShowCategorySelector] = useState(false);
   const [adding, setAdding] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
-
   const [selectedIngredient, setSelectedIngredient] = useState('');
   const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras');
   const [addError, setAddError] = useState('');

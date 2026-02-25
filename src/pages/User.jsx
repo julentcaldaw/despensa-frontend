@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ShoppingCart, User as UserIcon, Heart, ChefHat, Package, LogOut, Settings, Bell, ArrowRight, Leaf, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
+import DietRestrictions from './DietRestrictions';
 import BottomNavigation from "../components/BottomNavigation";
 import { authFetch } from "../utils/auth";
 
@@ -51,6 +52,7 @@ const itemVariants = {
 export default function User() {
   const { user, loading, error } = useUserProfile();
   const navigate = useNavigate();
+  const [showRestrictions, setShowRestrictions] = useState(false);
 
   const statsIcons = {
     recetasGuardadas: <ChefHat size={38} className="user-stats-icon" />,
@@ -68,6 +70,18 @@ export default function User() {
   if (loading) return <div className="user-profile">Cargando perfil...</div>;
   if (error) return <div className="user-profile">Error: {error}</div>;
   if (!user) return null;
+  if (showRestrictions) {
+    return (
+      <DietRestrictions
+        onBack={() => setShowRestrictions(false)}
+        initialSelected={user.restrictions || []}
+        onSave={(restrictions) => {
+          // Aquí puedes hacer un fetch para guardar restricciones si lo deseas
+          setShowRestrictions(false);
+        }}
+      />
+    );
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -132,7 +146,13 @@ export default function User() {
               className={`user-settings-item${item.key === 'logout' ? " danger" : ""}`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={item.key === 'logout' ? handleLogout : undefined}
+              onClick={
+                item.key === 'logout'
+                  ? handleLogout
+                  : item.key === 'restricciones'
+                  ? () => setShowRestrictions(true)
+                  : undefined
+              }
             >
               <span
                 className={`user-settings-icon user-settings-icon--${item.key === 'logout' ? 'danger' : 'primary'}`}

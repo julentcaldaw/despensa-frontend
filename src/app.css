@@ -1,3 +1,143 @@
+
+.restrictions-screen-bg {
+  min-height: 100vh;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 96px;
+}
+.restrictions-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  padding: 2.2rem 1.5rem 1.2rem 1.5rem;
+}
+.restrictions-back {
+  background: none;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: background 0.18s, color 0.18s;
+  margin-right: 0.5rem;
+  margin-top: 24px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.restrictions-back:hover {
+  background: #f3f4f6;
+  color: var(--emerald);
+}
+.restrictions-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  color: var(--text-main);
+}
+.restrictions-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin-bottom: 0.2rem;
+}
+.restrictions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.3rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+.restriction-card {
+  position: relative;
+  width: 250px;
+  height: 100px;
+  min-width: 250px;
+  min-height: 100px;
+  max-width: 100%;
+  border-radius: 24px;
+  border: 2px solid transparent;
+  background: #fff;
+  box-shadow: 0 2px 8px 0 rgba(31,41,55,0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border 0.18s, box-shadow 0.18s, background 0.18s;
+  overflow: hidden;
+  font-family: inherit;
+  padding: 0.7rem;
+}
+.restriction-card:focus {
+  outline: 2px solid var(--emerald);
+}
+.restriction-card-active {
+  border: 2px solid var(--emerald);
+  box-shadow: 0 4px 16px 0 rgba(16,185,129,0.13);
+}
+.restriction-bg-lactosa { background: var(--restriction-bg-lactosa); }
+.restriction-bg-gluten { background: var(--restriction-bg-gluten); }
+.restriction-bg-frutossecos { background: var(--restriction-bg-frutossecos); }
+.restriction-bg-soja { background: var(--restriction-bg-soja); }
+.restriction-bg-mariscos { background: var(--restriction-bg-mariscos); }
+.restriction-bg-huevo { background: var(--restriction-bg-huevo); }
+.restriction-icon-bg {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+.restriction-icon-main {
+  z-index: 1;
+  color: var(--emerald);
+  margin-bottom: 0.7rem;
+}
+.restriction-label {
+  z-index: 1;
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--text-main);
+  text-align: center;
+  margin-top: 0.2rem;
+}
+.restriction-check {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--emerald);
+  color: #fff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px 0 rgba(16,185,129,0.13);
+  z-index: 2;
+}
+.restrictions-save-btn {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 1.1rem 2.8rem;
+  font-size: 1.18rem;
+  font-weight: 700;
+  box-shadow: 0 4px 24px 0 rgba(245, 255, 159, 0.22);
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+  margin: 2.2rem auto 0 auto;
+  display: block;
+  z-index: 1;
+}
+.restrictions-save-btn:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 8px 32px 0 rgba(245, 255, 159, 0.22);
+}
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
@@ -200,7 +340,29 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
+.restrictions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.3rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
 
+@media (max-width: 1024px) {
+  .restrictions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .restrictions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .restrictions-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
 @media (max-width: 1024px) {
   .pantry-grid {
     grid-template-columns: repeat(3, 1fr);

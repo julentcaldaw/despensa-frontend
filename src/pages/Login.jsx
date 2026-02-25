@@ -1,6 +1,3 @@
-
-
-
 import React, { useState } from 'react';
 import { setToken } from '../utils/auth';
 import { Mail, Lock } from 'lucide-react';
