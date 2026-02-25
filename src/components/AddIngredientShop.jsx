@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { X } from 'lucide-react';
 
-const AddIngredientModal = ({
+const AddIngredientShop = ({
   show,
   onClose,
   onSubmit,
@@ -38,13 +38,9 @@ const AddIngredientModal = ({
                     const data = await res.json();
                     if (data && data.category) {
                       setIngredientCategory(data.category);
-                    } else {
-                      // Si no existe, no autocompletar
                     }
                   }
-                } catch (err) {
-                  // Silenciar error
-                }
+                } catch (err) {}
               }
             }}
             required
@@ -69,11 +65,22 @@ const AddIngredientModal = ({
             <option value="condimentos_aceites">Condimentos y Aceites</option>
             <option value="snacks_extras">Snacks y Extras</option>
           </select>
-          {/* Mensaje si no existe la categoría */}
+          <select
+            value={selectedShop}
+            onChange={e => setSelectedShop(e.target.value)}
+            className="pantry-input"
+            required
+          >
+            <option value="">Selecciona una tienda</option>
+            {shops && shops.map(shop => (
+              <option key={shop.id || shop._id || shop} value={shop.id || shop._id || shop}>
+                {shop.name || shop}
+              </option>
+            ))}
+          </select>
           {selectedIngredient && ingredientCategory === '' && (
             <div className="pantry-error pantry-error-primary">No se encontró la categoría, selecciónala manualmente.</div>
           )}
-          {/* Eliminar el select de tiendas si no se usa */}
           {addError && (
             <div className="pantry-error pantry-error-primary">{addError}</div>
           )}
@@ -86,4 +93,4 @@ const AddIngredientModal = ({
   );
 };
 
-export default AddIngredientModal;
+export default AddIngredientShop;

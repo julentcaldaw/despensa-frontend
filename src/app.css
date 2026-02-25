@@ -1,6 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
+:root {
+  --bg-dairy: #eff6ff;
+  --text-dairy: #1d4ed8;
+  --bg-veg: #e6fbe6;
+  --text-veg: #15803d;
+  --bg-meat: #fde2e4;
+  --text-meat: #c9184a;
+  --bg-pantry: #f3e8ff;
+  --text-pantry: #7c3aed;
+  --bg-condiment: #e0f4f7;
+  --text-condiment: #007991;
+  --bg-snack: #fce7f3;
+  --text-snack: #be185d;
+  --primary: #dbba38;
+  --primary-hover: #f3c623;
+  --secondary:#f8f1d3;
+  --background: #f9fafb;
+  --surface: #ffffff;
+  --text-main: #1f2937;
+  --text-secondary: #9ca3af;
+}
+
 .pantry-bg-main {
   min-height: 100vh;
   background: var(--background);
@@ -224,27 +246,6 @@
   box-shadow: 0 8px 24px 0 rgba(31,41,55,0.13);
 }
 
-:root {
-  --bg-dairy: #eff6ff;
-  --text-dairy: #1d4ed8;
-  --bg-veg: #e6fbe6;
-  --text-veg: #15803d;
-  --bg-meat: #fde2e4;
-  --text-meat: #c9184a;
-  --bg-pantry: #f3e8ff;
-  --text-pantry: #7c3aed;
-  --bg-condiment: #e0f4f7;
-  --text-condiment: #007991;
-  --bg-snack: #fce7f3;
-  --text-snack: #be185d;
-  --primary: #dbba38;
-  --primary-hover: #f3c623;
-  --secondary:#f8f1d3;
-  --background: #f9fafb;
-  --surface: #ffffff;
-  --text-main: #1f2937;
-  --text-secondary: #9ca3af;
-}
 
 body, .login-bg {
   background: var(--background);

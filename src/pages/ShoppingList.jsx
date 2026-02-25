@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AddIngredient from "../components/AddIngredient";
+import AddIngredientShop from "../components/AddIngredientShop";
 import User from "./User";
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNavigation from '../components/BottomNavigation';
@@ -228,12 +228,10 @@ function ShoppingList({ currentTab, onTabChange }) {
 		}
 		const item = group.items[itemIdx];
 		const itemId = item.id;
-		
 		console.log('Intentando eliminar:', { itemId, item });
 		if (!itemId) {
-			
 			console.error('No se puede eliminar: ingrediente sin id. Objeto:', item);
-			setAuthError('No se puede eliminar este ingrediente porque no tiene id. Consulta la consola para más detalles.');
+			setAuthError('No se puede eliminar este ingrediente porque no tiene id. Si el ingrediente fue creado manualmente o no se sincronizó, revisa la base de datos.');
 			return;
 		}
 		try {
@@ -242,6 +240,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
+			// Permitir eliminar aunque bought sea true
 			const response = await authFetch(`/listacompra/${itemId}`, {
 				method: 'DELETE',
 				headers: {
@@ -254,7 +253,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 				return;
 			}
 			if (!response.ok) {
-				setAuthError('Error al eliminar el ingrediente.');
+				setAuthError('Error al eliminar el ingrediente. Puede que ya esté eliminado o no exista en la base de datos.');
 				return;
 			}
 			await fetchShoppingList();
@@ -270,10 +269,16 @@ function ShoppingList({ currentTab, onTabChange }) {
 	let filteredGroups = shoppingList
 		.map(group => ({
 			...group,
-			items: group.items.filter(item => (
-				(item.name && item.name.toLowerCase().includes(search.toLowerCase())) ||
-				(item.ingredient && item.ingredient.name && item.ingredient.name.toLowerCase().includes(search.toLowerCase()))
-			))
+			items: group.items
+				.map(item => {
+					// Normaliza el id
+					let id = item.id || item._id || (item.ingredient && item.ingredient.id);
+					return { ...item, id };
+				})
+				.filter(item => (
+					(item.name && item.name.toLowerCase().includes(search.toLowerCase())) ||
+					(item.ingredient && item.ingredient.name && item.ingredient.name.toLowerCase().includes(search.toLowerCase()))
+				))
 		}))
 		.filter(group => group.items.length > 0)
 		.sort((a, b) => a.shop.localeCompare(b.shop));
@@ -366,7 +371,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 				<div className="add-ingredient-section" style={{marginBottom:'1.2rem'}}>
 					{showAdd && (
 						<>
-							<AddIngredient
+							<AddIngredientShop
 								show={showAdd}
 								onClose={() => {
 									setShowAdd(false);
@@ -442,6 +447,9 @@ function ShoppingList({ currentTab, onTabChange }) {
 																? (item.category || item.ingredient.category).replace(/_/g, ' ').toUpperCase()
 																: 'SIN CATEGORÍA'}
 														</span>
+														{!item.id && (
+															<div style={{color:'#e74c3c', fontWeight:'bold', fontSize:'0.9em', margin:'8px 0'}}>¡Este ingrediente no tiene id! No se puede eliminar ni marcar como comprado.</div>
+														)}
 														<button
 															className="pantry-item-delete"
 															onClick={() => handleDelete(shopIdx, itemIdx)}

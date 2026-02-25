@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Search, Trash2, Leaf, Drumstick, Egg, Soup, Cookie, ScanLine, Salad, Fish, Coffee } from 'lucide-react';
 import { authFetch } from '../utils/auth';
-import AddIngredient from '../components/AddIngredient';
+import AddIngredientPantry from '../components/AddIngredientPantry';
 import Scanner from '../components/Scanner';
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNavigation from '../components/BottomNavigation';
@@ -234,7 +234,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
         <div className="pantry-empty">No tienes ingredientes en tu inventario.</div>
       )}
 
-      <AddIngredient
+      <AddIngredientPantry
         show={showAdd}
         onClose={() => setShowAdd(false)}
         onSubmit={handleAdd}
