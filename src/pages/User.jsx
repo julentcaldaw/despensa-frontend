@@ -44,6 +44,9 @@ export default function User() {
   if (loading) return <div className="user-profile">Cargando perfil...</div>;
   if (error) return <div className="user-profile">Error: {error}</div>;
   if (!user) return null;
+  if (showRestrictions) {
+    return <DietRestrictions onBack={() => setShowRestrictions(false)} />;
+  }
   return (
     <>
       <motion.div
