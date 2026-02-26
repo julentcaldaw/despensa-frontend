@@ -7,7 +7,6 @@ import DietRestrictions from './DietRestrictions';
 import BottomNavigation from "../components/BottomNavigation";
 import { useAuth } from "../utils/AuthContext";
 
-// useUserProfile eliminado, ahora usamos useAuth
 const containerVariants = {
   hidden: {},
   show: {
@@ -22,11 +21,14 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 60 } }
 };
 
-
-
 export default function User() {
   const { user, loading, error, logout } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
   const [showRestrictions, setShowRestrictions] = useState(false);
 
   const statsIcons = {
@@ -115,7 +117,7 @@ export default function User() {
               whileTap={{ scale: 0.97 }}
               onClick={
                 item.key === 'logout'
-                  ? logout
+                  ? handleLogout
                   : item.key === 'restricciones'
                   ? () => setShowRestrictions(true)
                   : undefined

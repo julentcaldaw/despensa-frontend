@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { setToken } from '../utils/auth';
+import { useAuth } from '../utils/AuthContext';
 import { Mail, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,12 +12,13 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(''); // Si tienes un estado local renombrado, cámbialo aquí
-    try {
+    setError(''); 
+        try {
       const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -26,9 +28,10 @@ const Login = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Error al iniciar sesión');
       setToken(data.token);
+      login(data.token);
       navigate('/despensa');
     } catch (err) {
-      setError(err.message); // Si tienes un estado local renombrado, cámbialo aquí
+      setError(err.message); 
     } finally {
       setLoading(false);
     }
