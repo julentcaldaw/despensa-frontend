@@ -52,7 +52,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 		const [selectedShopFilter, setSelectedShopFilter] = useState('Todas');
 	const [shoppingList, setShoppingList] = useState([]);
 		if (!user && !loading) {
-			return <div className="user-profile">Inicia sesión para ver tu lista de la compra.</div>;
+			return <div className="user-profile">Inicia sesión para ver tu lista de la compra</div>;
 		}
 
 		const fetchShoppingList = async () => {
@@ -165,21 +165,21 @@ function ShoppingList({ currentTab, onTabChange }) {
 	}, [selectedIngredient, allIngredients]);
 
 
-	async function marcarComoComprado(id, token) {
-	const response = await authFetch(`/listacompra/${id}/bought`, {
-		method: 'PATCH',
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${token}`
-		},
-		body: JSON.stringify({ bought: true })
-	});
-	if (!response.ok) {
-		throw new Error('Error al marcar como comprado');
+	async function markAsBought(id, token) {
+		const response = await authFetch(`/listacompra/${id}/bought`, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			body: JSON.stringify({ bought: true })
+		});
+		if (!response.ok) {
+			throw new Error('Error al marcar como comprado');
+		}
+		const itemActualizado = await response.json();
+		return itemActualizado;
 	}
-	const itemActualizado = await response.json();
-	return itemActualizado;
-}
 
 	const handleBought = async (itemId) => {
 	let foundGroupIdx = -1;
@@ -217,7 +217,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 				items: group.items.map((it, i) => i === foundItemIdx ? { ...it, bought: true } : it)
 			};
 		}));
-		const itemActualizado = await marcarComoComprado(item.id, token);
+		const itemActualizado = await markAsBought(item.id, token);
 		await fetchShoppingList();
 	} catch (err) {
 		setAuthError(err.message || 'Error de conexión al marcar como comprado.');

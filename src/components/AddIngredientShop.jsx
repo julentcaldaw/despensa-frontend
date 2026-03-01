@@ -33,7 +33,10 @@ const AddIngredientShop = ({
               setSelectedIngredient(e.target.value);
               if (e.target.value.trim().length > 1) {
                 try {
-                  const res = await fetch(`/api/ingredients/category?name=${encodeURIComponent(e.target.value)}`);
+                  const token = localStorage.getItem('token');
+                  const res = await fetch(`/api/ingredients/category?name=${encodeURIComponent(e.target.value)}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
                   if (res.ok) {
                     const data = await res.json();
                     if (data && data.category) {

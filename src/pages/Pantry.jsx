@@ -134,8 +134,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
       const response = await authFetch('/pantry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredientId: ingredient.id, category: ingredientCategory })
-      });
+        body: JSON.stringify({ ingredientId: ingredient.id, category: ingredientCategory })      });
       if (!response.ok) {
         const data = await response.json();
         if (response.status === 409) {
