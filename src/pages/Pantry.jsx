@@ -17,6 +17,7 @@ import AddIngredientPantry from '../components/AddIngredientPantry';
 import Scanner from '../components/Scanner';
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNavigation from '../components/BottomNavigation';
+import { useNavigate } from 'react-router-dom';
 
 const Pantry = ({ currentTab, onTabChange }) => {
   const { user, loading, error } = useAuth();
@@ -164,30 +165,30 @@ const Pantry = ({ currentTab, onTabChange }) => {
     <div className="pantry-bg-main">
       <div className="pantry-main-card">
         <div className="pantry-container">
-      {showScanner && (
-        <Scanner
-          show={showScanner}
-          onClose={() => setShowScanner(false)}
-          setScanProduct={setScanProduct}
-          scanCategory={scanCategory}
-        />
-      )}
+      
 
-      <div className="pantry-header" style={{flexDirection: 'column', alignItems: 'center'}}>
+      <div className="pantry-header" style={{flexDirection: 'column', alignItems: 'center', paddingTop: '1.2rem'}}>
         <img src="/logoA.png" alt="Logo" style={{ maxWidth: '320px', width: '100%', height: 'auto', marginBottom: '0.7rem', marginTop: '-0.5rem' }} />
-        <h2 className="pantry-title" style={{textAlign: 'center', fontFamily: 'Roboto, Montserrat, Poppins, Inter, Arial, sans-serif', fontSize: '2.5rem', letterSpacing: '0.03em'}}>miDESPENSA</h2>
-        <div className="pantry-float-actions">
-          <button
-            className="pantry-float-btn scan"
-            title="Escanear"
-            onClick={() => setShowScanner(true)}
-          >
-            <ScanLine size={28} />
-          </button>
-          <button className="pantry-float-btn add" title="Añadir" onClick={() => setShowAdd(true)}>
-            <Plus size={28} />
-          </button>
-        </div>
+        <h2 className="pantry-title" style={{
+          textAlign: 'center',
+          fontFamily: 'Roboto, Montserrat, Poppins, Inter, Arial, sans-serif',
+          letterSpacing: '0.03em',
+          marginTop: '0.5rem',
+          marginBottom: '2.2rem',
+          position: 'relative'
+        }}>miDESPENSA</h2>
+      </div>
+      <div className="pantry-float-actions">
+        <button
+          className="pantry-float-btn scan"
+          title="Escanear"
+          onClick={() => setShowScanner(true)}
+        >
+          <ScanLine size={28} />
+        </button>
+        <button className="pantry-float-btn add" title="Añadir" onClick={() => setShowAdd(true)}>
+          <Plus size={28} />
+        </button>
       </div>
 
       <div className="pantry-search">
@@ -219,7 +220,9 @@ const Pantry = ({ currentTab, onTabChange }) => {
                 <span className="pantry-item-bgicon">
                   {cat.icon && React.cloneElement(cat.icon, { size: 72 })}
                 </span>
-                <div className="pantry-item-title">{item.name}</div>
+                <span className="pantry-item-title">
+                  {item.name}
+                </span>
                 <span className="pantry-item-category">
                   {item.category ? item.category.replace(/_/g, ' ').toUpperCase() : 'SIN CATEGORÍA'}
                 </span>
@@ -237,6 +240,20 @@ const Pantry = ({ currentTab, onTabChange }) => {
         <div className="pantry-empty">No tienes ingredientes en tu inventario.</div>
       )}
 
+      {showScanner && (
+        <div className="pantry-modal-bg" onClick={() => setShowScanner(false)}>
+          <div className="pantry-modal" onClick={e => e.stopPropagation()}>
+            <button className="pantry-modal-close" onClick={() => setShowScanner(false)}>
+              ×
+            </button>
+            <h3 className="pantry-modal-title">Escanear producto</h3>
+            <Scanner
+              onScan={setScanProduct}
+              onClose={() => setShowScanner(false)}
+            />
+          </div>
+        </div>
+      )}
       <AddIngredientPantry
         show={showAdd}
         onClose={() => setShowAdd(false)}
