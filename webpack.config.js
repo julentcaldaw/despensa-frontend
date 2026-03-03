@@ -46,6 +46,6 @@ module.exports = {
         changeOrigin: true,
       },
     ],
-    port: 5050,
+      port: 5050,
   },
 };
