@@ -323,7 +323,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 					/>
 				)}
 				<div className="pantry-header flex flex-col items-center justify-center pt-2">
-						<img src="/logoA.png" alt="Logo" className="logoA-img mx-auto mb-2" />
+						<img src="/logoB.png" alt="Logo" className="logoA-img mx-auto mb-2" />
 						<h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miCOMPRA</h2>
 					<div className="pantry-float-actions flex items-center -mt-4">
 						<button className="pantry-float-btn add" title="Añadir ingrediente" onClick={() => setShowAdd(true)}>

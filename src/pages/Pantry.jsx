@@ -167,7 +167,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
         <div className="pantry-container">
       
       <div className="pantry-header flex flex-col items-center justify-center pt-5 gap-2">
-        <img src="/logoA.png" alt="Logo" className="logoA-img mx-auto" />
+        <img src="/logoB.png" alt="Logo" className="logoA-img mx-auto" />
         <h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miDESPENSA</h2>
       </div>
       <div className="pantry-float-actions">
