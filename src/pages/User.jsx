@@ -87,9 +87,9 @@ export default function User() {
                     whileTap={{ scale: 0.97 }}
                     onClick={
                       item.key === 'restricciones'
-                        ? () => setShowRestrictions(true)
+                        ? () => navigate('/restricciones')
                         : item.key === 'dieta'
-                        ? () => setShowPreferences(true)
+                        ? () => navigate('/dieta')
                         : undefined
                     }
                   >
@@ -103,7 +103,7 @@ export default function User() {
               </div>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '3rem', marginTop: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '4rem', marginTop: '1.2rem' }}>
                 {[
                   { key: 'recetasGuardadas', value: user.stats?.recetasGuardadas ?? 0 },
                   { key: 'despensa', value: user.pantryCount ?? 0 },

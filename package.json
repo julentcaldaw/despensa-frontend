@@ -24,8 +24,13 @@
     "build": "webpack --mode production"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "autoprefixer": "^10.4.27",
     "daisyui": "^5.5.18",
     "dotenv-webpack": "^8.1.1",
+    "postcss": "^8.5.8",
+    "postcss-loader": "^8.2.1",
+    "tailwindcss": "^4.2.1",
     "webpack": "^5.105.2",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.15.2"

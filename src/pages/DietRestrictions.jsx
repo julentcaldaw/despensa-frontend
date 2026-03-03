@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { motion } from 'framer-motion';
 import {
@@ -45,6 +46,7 @@ const cardVariants = {
 };
 
 export default function DietRestrictions({ onBack, onSave }) {
+    const navigate = useNavigate();
   const { user, loading, error } = useAuth();
   const [allRestrictions, setAllRestrictions] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -123,16 +125,23 @@ export default function DietRestrictions({ onBack, onSave }) {
     <div className="pantry-bg-main">
       <div className="pantry-main-card">
         <header className="restrictions-header">
-          <button className="restrictions-back" onClick={onBack} aria-label="Volver">
+          <button
+            className="restrictions-back"
+            onClick={onBack ? onBack : () => navigate('/perfil')}
+            aria-label="Volver"
+          >
             <ArrowLeft size={28} />
           </button>
           <div>
-            <h2 className="restrictions-title">Restricciones</h2>
+            <h2 className="restrictions-title">misRESTRICCIONES</h2>
             <p className="restrictions-subtitle">Selecciona tus alergias o intolerancias para personalizar tu experiencia.</p>
           </div>
         </header>
-        {successMsg && <div className="text-green-500 mb-4">{successMsg}</div>}
-        {errorMsg && <div className="text-red-500 mb-4">{errorMsg}</div>}
+        <div className='restrictions-msg'>
+        {successMsg && <div className="restrictions-msg-success">{successMsg}</div>}
+        {errorMsg && <div className="restrictions-msg-error">{errorMsg}</div>}
+        </div>
+        
         <motion.div
           className="restrictions-grid"
           variants={containerVariants}
@@ -156,7 +165,7 @@ export default function DietRestrictions({ onBack, onSave }) {
                 
               >
                 <span className="restriction-icon-bg">
-                  <Icon size={84} className="opacity-20" />
+                  <Icon size={84} className="opacity-50" />
                 </span>
                 <span className="restriction-label">{meta.label}</span>
                 {isActive && (

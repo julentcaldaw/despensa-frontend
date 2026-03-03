@@ -406,8 +406,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 								});
 								return Object.entries(groupedByShop).map(([shop, items], shopIdx) => (
 									<div key={shop} className="mb-12">
-										<div className="w-full text-center font-bold text-[1.1em] my-6">{shop}</div>
-										<div className="shopping-list-grid mb-4">
+										<div className="shop-list">{shop}</div>
+										<div className="shopping-list-grid mb-4 mt-6">
 											{items.map((item, itemIdx) => {
 												const cat = CATEGORY_MAP[item.category] || {};
 												return (

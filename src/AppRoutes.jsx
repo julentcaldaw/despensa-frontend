@@ -1,6 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import DietRestrictions from './pages/DietRestrictions';
+import DietPreferences from './pages/DietPreferences';
 import Register from './pages/Register';
 import Pantry from './pages/Pantry';
 import Recipes from './pages/Recipes';
@@ -51,6 +53,26 @@ function AppRoutes() {
           <PrivateRoute>
             <Layout>
               <User />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/restricciones"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <DietRestrictions />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/dieta"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <DietPreferences />
             </Layout>
           </PrivateRoute>
         }
