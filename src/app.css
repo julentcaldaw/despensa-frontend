@@ -1095,7 +1095,6 @@ body, .login-bg {
   box-shadow: 0 2px 8px rgba(5,150,105,0.10);
 }
 
-/* Eliminar subrayado de los títulos de navegación, activos e inactivos */
 .nav-label {
   text-decoration: none !important;
 }

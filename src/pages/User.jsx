@@ -4,6 +4,7 @@ import { ShoppingCart, User as UserIcon, Heart, ChefHat, Package, LogOut, Settin
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
 import DietRestrictions from './DietRestrictions';
+import DietPreferences from "./DietPreferences";
 import BottomNavigation from "../components/BottomNavigation";
 import { useAuth } from "../utils/AuthContext";
 
@@ -30,6 +31,7 @@ export default function User() {
     navigate('/login');
   };
   const [showRestrictions, setShowRestrictions] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
 
   const statsIcons = {
     recetasGuardadas: <ChefHat size={35} className="user-stats-icon" />,
@@ -48,6 +50,9 @@ export default function User() {
   if (!user) return null;
   if (showRestrictions) {
     return <DietRestrictions onBack={() => setShowRestrictions(false)} />;
+  }
+  if (showPreferences) {
+    return <DietPreferences onBack={() => setShowPreferences(false)} />;
   }
   return (
     <>
@@ -120,6 +125,8 @@ export default function User() {
                   ? handleLogout
                   : item.key === 'restricciones'
                   ? () => setShowRestrictions(true)
+                  : item.key === 'dieta'
+                  ? () => setShowPreferences(true)
                   : undefined
               }
             >
