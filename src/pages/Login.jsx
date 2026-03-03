@@ -38,11 +38,11 @@ const Login = () => {
   };
 
   return (
-    <div className="login-bg" style={{ minHeight: '100vh' }}>
+    <div className="login-bg min-h-screen">
       <div className="login-container">
         <form className="login-card login-card-logo" onSubmit={handleSubmit} autoComplete="off">
           <div className="login-logo-block">
-            <img src="/logoA.png" alt="Logo" className="login-logo-img" />
+            <img src="/logoA.png" alt="Logo" className="logoA-img max-w-[180px] w-full h-auto" />
             <p className="login-app-subtitle">Tu cocina inteligente</p>
           </div>
           <h2 className="login-title">Iniciar Sesión</h2>
@@ -75,20 +75,18 @@ const Login = () => {
               required
             />
           </div>
-          {error && <div className="login-error" style={{ color: '#dc2626', marginBottom: '0.5rem', textAlign: 'center' }}>{error}</div>}
+          {error && <div className="login-error text-red-600 mb-2 text-center">{error}</div>}
           <button
-            className="btn-primary"
+            className="btn-primary mt-0"
             type="submit"
             disabled={loading}
-            style={{ marginTop: 0 }}
           >
-            {loading ? 'Cargando...' : 'Entrar'}
+            {loading ? 'Entrando...' : 'Entrar'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/register')}
-            className="login-register-link"
-            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}
+            className="login-register-link bg-transparent border-none p-0 font-inherit cursor-pointer"
           >
             ¿No tienes cuenta? Regístrate
           </button>

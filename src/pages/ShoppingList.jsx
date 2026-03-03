@@ -321,31 +321,16 @@ function ShoppingList({ currentTab, onTabChange }) {
 						setShops={setShops}
 					/>
 				)}
-				<div className="pantry-header" style={{flexDirection: 'column', alignItems: 'center'}}>
-								<img src="/logoA.png" alt="Logo" style={{ maxWidth: '320px', width: '100%', height: 'auto', marginBottom: '0.7rem', marginTop: '-0.5rem' }} />
-								<h2 className="pantry-title" style={{textAlign: 'center', fontFamily: 'Roboto, Montserrat, Poppins, Inter, Arial, sans-serif', fontSize: '2.5rem', letterSpacing: '0.03em'}}>miCOMPRA</h2>
-					<div className="pantry-float-actions">
+				<div className="pantry-header flex flex-col items-center justify-center pt-5">
+						<img src="/logoA.png" alt="Logo" className="logoA-img mx-auto mb-2" />
+						<h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miCOMPRA</h2>
+					<div className="pantry-float-actions flex items-center">
 						<button className="pantry-float-btn add" title="Añadir ingrediente" onClick={() => setShowAdd(true)}>
 							+
 						</button>
 						{hayComprados && (
 							<button
-								className="pantry-float-btn delete-bought"
-								title="Eliminar todos los comprados"
-								style={{
-									background: '#fff',
-									color: '#e74c3c',
-									border: '2px solid #e74c3c',
-									marginLeft: 8,
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									padding: '6px',
-									borderRadius: '24px',
-									boxShadow: '0 2px 8px rgba(231,76,60,0.12)'
-								}}
-								onClick={handleDeleteBought}
-							>
+								className="pantry-float-btn delete-bought bg-white text-red-500 border-2 border-red-500 ml-2 flex items-center justify-center px-2 py-1 rounded-full shadow-md" onClick={handleDeleteBought}>
 								<ShoppingCart size={24} color="#e74c3c" />
 							</button>
 						)}
@@ -363,7 +348,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 						onChange={e => setSearch(e.target.value)}
 					/>
 				</div>
-				<div className="pantry-filters" style={{marginBottom:'1rem', display:'flex', gap:'1rem'}}>
+				<div className="pantry-filters mb-4 flex gap-4">
 					<select className="pantry-select" value={order} onChange={e => setOrder(e.target.value)}>
 						<option value="categoria">Ordenar por categoría</option>
 						<option value="ultimo">Últimos añadidos</option>
@@ -374,7 +359,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 						))}
 					</select>
 				</div>
-				<div className="add-ingredient-section" style={{marginBottom:'1.2rem'}}>
+				<div className="add-ingredient-section mb-5">
 					{showAdd && (
 						<>
 							<AddIngredientShop
@@ -400,9 +385,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 								addError={addIngredientError}
 								adding={false}
 							/>
-							{addIngredientError && (
-							  <div style={{ color: 'red', marginTop: 8 }}>{addIngredientError}</div>
-							)}
+							{addIngredientError && (<div className="text-red-600 mt-2">{addIngredientError}</div>)}
 						</>
 					)}
 				</div>
@@ -422,9 +405,9 @@ function ShoppingList({ currentTab, onTabChange }) {
 									}));
 								});
 								return Object.entries(groupedByShop).map(([shop, items], shopIdx) => (
-									<div key={shop} style={{margin:'0 0 48px 0'}}>
-										<div style={{width:'100%', textAlign:'center', fontWeight:'bold', fontSize:'1.1em', margin:'24px 0 16px 0'}}>{shop}</div>
-										<div className="shopping-list-grid" style={{marginBottom:'16px'}}>
+									<div key={shop} className="mb-12">
+										<div className="w-full text-center font-bold text-[1.1em] my-6">{shop}</div>
+										<div className="shopping-list-grid mb-4">
 											{items.map((item, itemIdx) => {
 												const cat = CATEGORY_MAP[item.category] || {};
 												return (
@@ -453,9 +436,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 																? (item.category || item.ingredient.category).replace(/_/g, ' ').toUpperCase()
 																: 'SIN CATEGORÍA'}
 														</span>
-														{!item.id && (
-															<div style={{color:'#e74c3c', fontWeight:'bold', fontSize:'0.9em', margin:'8px 0'}}>¡Este ingrediente no tiene id! No se puede eliminar ni marcar como comprado.</div>
-														)}
+														{!item.id && (<div className="text-red-600 font-bold text-[0.9em] my-2">¡Este ingrediente no tiene id! No se puede eliminar ni marcar como comprado.</div>)}
 														<button
 															className="pantry-item-delete"
 															onClick={() => handleDelete(shopIdx, itemIdx)}
@@ -465,8 +446,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 															<Trash2 size={18} />
 														</button>
 														<button
-															className="pantry-item-delete"
-															style={{ right: 56 }}
+															className="pantry-item-delete absolute right-14"
 															onClick={() => handleBought(item.id)}
 															title="Comprado"
 														>
@@ -516,8 +496,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 														<Trash2 size={18} />
 													</button>
 													<button
-														className="pantry-item-delete"
-														style={{ right: 56 }}
+														className="pantry-item-delete absolute right-14"
 														onClick={() => handleBought(item.id)}
 														title="Comprado"
 													>

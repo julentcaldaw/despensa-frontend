@@ -116,15 +116,13 @@ export default function EditProfileModal({ user, show, onClose, onSaved }) {
             className="btn-primary"
             type="submit"
             disabled={loading}
-            style={{ marginTop: 0 }}
           >
             {loading ? 'Guardando...' : 'Guardar cambios'}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="login-register-link"
-            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}
+            className="login-register-link bg-transparent border-none p-0 font-inherit cursor-pointer"
           >
             Cancelar
           </button>

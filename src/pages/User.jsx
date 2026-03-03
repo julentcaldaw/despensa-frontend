@@ -51,16 +51,9 @@ export default function User() {
     <div className="pantry-bg-main">
       <div className="pantry-main-card">
         <div className="pantry-container">
-          <div className="pantry-header" style={{ flexDirection: 'column', alignItems: 'center', paddingTop: '1.2rem' }}>
-            <img src="/logoA.png" alt="Logo" style={{ maxWidth: '320px', width: '100%', height: 'auto', marginBottom: '0.7rem', marginTop: '-0.5rem' }} />
-            <h2 className="pantry-title" style={{
-              textAlign: 'center',
-              fontFamily: 'Roboto, Montserrat, Poppins, Inter, Arial, sans-serif',
-              letterSpacing: '0.03em',
-              marginTop: '0.5rem',
-              marginBottom: '2.2rem',
-              position: 'relative'
-            }}>miPERFIL</h2>
+          <div className="pantry-header flex flex-col items-center justify-center pt-5">
+            <img src="/logoA.png" alt="Logo" className="logoA-img mx-auto mb-2" />
+            <h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miPERFIL</h2>
           </div>
           <div className="user-columns" style={{ display: 'flex', gap: '2rem' }}>
             {/* Columna izquierda: avatar y restricciones/preferencias */}

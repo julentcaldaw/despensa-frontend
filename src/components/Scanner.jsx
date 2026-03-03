@@ -81,37 +81,27 @@ const Scanner = ({ onScan, onClose }) => {
         </button>
         <h3 className="pantry-modal-title">Escanear producto</h3>
         {cameraError && (
-          <p style={{ color: 'red', textAlign: 'center' }}>
-            <strong>Error de cámara:</strong> {cameraError}
-          </p>
+          <p className="text-red-600 text-center font-semibold"><strong>Error de cámara:</strong> {cameraError}</p>
         )}
         {apiError && !cameraError && (
-          <p style={{ color: 'red', textAlign: 'center' }}>
-            <strong>Error de API:</strong> {apiError}
-          </p>
+          <p className="text-red-600 text-center font-semibold"><strong>Error de API:</strong> {apiError}</p>
         )}
         {!product && !loading && !apiError && !cameraError && (
           <>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-              <div id="scanner" ref={scannerRef} style={{ width: '300px', height: '300px', paddingTop: '6rem', margin: '0 auto' }}></div>
-            </div>
-            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-              <button className="btn-secondary" onClick={handleSwitchCamera} disabled={isSwitchingCamera}>
-                Cambiar cámara ({cameraFacing === 'environment' ? 'Frontal' : 'Trasera'})
-              </button>
-            </div>
+            <div className="flex justify-center items-center w-full"><div id="scanner" ref={scannerRef} className="w-[300px] h-[300px] pt-24 mx-auto"></div></div>
+            <div className="text-center mt-4"><button className="btn-secondary" onClick={handleSwitchCamera} disabled={isSwitchingCamera}>Cambiar cámara ({cameraFacing === 'environment' ? 'Frontal' : 'Trasera'})</button></div>
           </>
         )}
         {loading && <p>Buscando producto...</p>}
         {product && (
           <div className="product-info">
             <h4>{product.name || 'Sin nombre'}</h4>
-            {product.image && <img src={product.image} alt={product.name} style={{ width: '150px' }} />}
+            {product.image && <img src={product.image} alt={product.name} className="w-[150px]" />}
             <p>Marca: {product.brand || 'Desconocida'}</p>
             <p>Categoría: {product.category || 'Desconocida'}</p>
           </div>
         )}
-        <button className="btn-primary" onClick={onClose} style={{marginTop:'1rem'}}>Cerrar</button>
+        <button className="btn-primary mt-4" onClick={onClose}>Cerrar</button>
       </div>
     </div>
   );

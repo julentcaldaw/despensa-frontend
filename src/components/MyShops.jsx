@@ -104,7 +104,7 @@ const MyShops = ({ shops, setShops }) => {
         placeholder="Añadir nueva tienda"
       />
       <button onClick={handleAddShop}>Añadir</button>
-      {addError && <div style={{ color: 'red', marginTop: 8 }}>{addError}</div>}
+      {addError && <div className="text-red-600 mt-2">{addError}</div>}
       <ul>
         {shops && shops.length > 0 ? (
           shops.map((shop) => (

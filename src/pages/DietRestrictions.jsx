@@ -131,8 +131,8 @@ export default function DietRestrictions({ onBack, onSave }) {
             <p className="restrictions-subtitle">Selecciona tus alergias o intolerancias para personalizar tu experiencia.</p>
           </div>
         </header>
-        {successMsg && <div className="pantry-error-primary" style={{ color: '#10b981', marginBottom: '1rem' }}>{successMsg}</div>}
-        {errorMsg && <div className="pantry-error-primary" style={{ color: '#ef4444', marginBottom: '1rem' }}>{errorMsg}</div>}
+        {successMsg && <div className="text-green-500 mb-4">{successMsg}</div>}
+        {errorMsg && <div className="text-red-500 mb-4">{errorMsg}</div>}
         <motion.div
           className="restrictions-grid"
           variants={containerVariants}
@@ -156,12 +156,12 @@ export default function DietRestrictions({ onBack, onSave }) {
                 
               >
                 <span className="restriction-icon-bg">
-                  <Icon size={84} style={{ opacity: 0.08 }} />
+                  <Icon size={84} className="opacity-20" />
                 </span>
                 <span className="restriction-label">{meta.label}</span>
                 {isActive && (
                   <span className="restriction-check">
-                    <Check size={24} strokeWidth={3} style={{ color: 'var(--primary)', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.10))' }} />
+                    <Check size={24} strokeWidth={3} className="text-primary drop-shadow-sm" />
                   </span>
                 )}
               </motion.button>

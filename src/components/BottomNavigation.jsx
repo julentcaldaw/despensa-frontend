@@ -28,7 +28,7 @@ const BottomNavigation = () => {
                 className="nav-icon"
               />
             </span>
-            <span className="nav-label" style={{ textDecoration: 'none' }}>{label}</span>
+            <span className="nav-label no-underline">{label}</span>
             {isActive && <span className="nav-indicator" />}
           </Link>
         );

@@ -236,8 +236,8 @@
   display: flex;
   gap: 18px;
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 60px;
+  right: 60px;
   z-index: 10;
 }
 .pantry-float-btn {
@@ -276,10 +276,13 @@
 }
 
 .pantry-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
   margin-bottom: 1.2rem;
+  position: relative;
 }
 .pantry-title {
   font-size: 1.5rem;
@@ -471,9 +474,11 @@ body, .login-bg {
 }
 
 .login-logo-img {
-  width: 210px !important;
-  height: 80px !important;
-  margin-bottom: 0.5rem;
+  max-width: 120px !important;
+  width: 100% !important;
+  height: auto !important;
+  margin-bottom: 0.5rem !important;
+  margin-top: -2px !important;
   display: block;
   border-radius: 8px;
 }
@@ -861,9 +866,11 @@ body, .login-bg {
 }
 
 .login-logo-img {
-  width: 210px !important;
-  height: 80px !important;
-  margin-bottom: 0.5rem;
+  max-width: 120px !important;
+  width: 100% !important;
+  height: auto !important;
+  margin-bottom: 0.5rem !important;
+  margin-top: -2px !important;
   display: block;
   border-radius: 8px;
 }
