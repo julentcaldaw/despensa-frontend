@@ -15,7 +15,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(''); // Si tienes un estado local renombrado, cámbialo aquí
+    setError(''); 
     setSuccess('');
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
@@ -31,7 +31,7 @@ const Register = () => {
       setSuccess('Registro exitoso. Ahora puedes iniciar sesión.');
       setTimeout(() => navigate('/login'), 1200);
     } catch (err) {
-      setError(err.message); // Si tienes un estado local renombrado, cámbialo aquí
+      setError(err.message);
     } finally {
       setLoading(false);
     }

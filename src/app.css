@@ -1,4 +1,3 @@
-
 .restrictions-screen-bg {
   min-height: 100vh;
   background: var(--background);
@@ -273,7 +272,7 @@
 .pantry-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem 2.5rem 1rem;
+  padding: 2rem 0.3rem 2.5rem 0.3rem;
 }
 
 .pantry-header {
@@ -981,7 +980,7 @@ body, .login-bg {
   inset: 0;
   background: rgba(31,41,55,0.18);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 50;
 }
@@ -994,6 +993,7 @@ body, .login-bg {
   max-width: 600px;
   position: relative;
   animation: login-fade-in 0.5s cubic-bezier(.4,0,.2,1);
+  margin-top: 6vh;
 }
 .pantry-modal-close {
   position: absolute;
@@ -1340,4 +1340,21 @@ body, .login-bg {
 
 .user-settings-item:active {
   filter: brightness(0.98);
+}
+
+/* --- Responsive para User.jsx --- */
+@media (max-width: 900px) {
+  .user-columns {
+    flex-direction: column !important;
+    gap: 1.2rem !important;
+  }
+}
+@media (max-width: 600px) {
+  .pantry-container {
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+  }
+  .user-columns {
+    gap: 0.5rem !important;
+  }
 }

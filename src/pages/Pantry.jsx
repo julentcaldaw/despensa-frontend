@@ -166,7 +166,6 @@ const Pantry = ({ currentTab, onTabChange }) => {
       <div className="pantry-main-card">
         <div className="pantry-container">
       
-
       <div className="pantry-header" style={{flexDirection: 'column', alignItems: 'center', paddingTop: '1.2rem'}}>
         <img src="/logoA.png" alt="Logo" style={{ maxWidth: '320px', width: '100%', height: 'auto', marginBottom: '0.7rem', marginTop: '-0.5rem' }} />
         <h2 className="pantry-title" style={{
