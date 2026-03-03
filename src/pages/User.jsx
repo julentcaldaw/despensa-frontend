@@ -56,7 +56,6 @@ export default function User() {
             <h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miPERFIL</h2>
           </div>
           <div className="user-columns" style={{ display: 'flex', gap: '2rem' }}>
-            {/* Columna izquierda: avatar y restricciones/preferencias */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <motion.div className="user-header" variants={itemVariants}>
                 <div className="user-avatar-wrapper">
@@ -103,7 +102,6 @@ export default function User() {
                 ))}
               </div>
             </div>
-            {/* Columna derecha: stats y notificaciones/logout */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '3rem', marginTop: '0.75rem' }}>
                 {[
