@@ -80,7 +80,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 		useEffect(() => {
 			fetchShoppingList();
 		}, []);
-	const [shops, setShops] = useState(["Mercadona", "Frutería", "Deza", "Lidl"]);
+	const [shops, setShops] = useState(["mercadona", "frutería", "deza", "lidl"].map(s => s.toLowerCase()));
 	const [showUser, setShowUser] = useState(false);
 	const [showAdd, setShowAdd] = useState(false);
 	const [selectedIngredient, setSelectedIngredient] = useState('');
@@ -116,6 +116,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 	}, []);
 
 	const handleAdd = async (newIngredient, newShop, category = ingredientCategory) => {
+		newShop = newShop.toLowerCase();
 		try {
 			setAddIngredientError("");
 			const token = localStorage.getItem('token');
@@ -289,10 +290,10 @@ function ShoppingList({ currentTab, onTabChange }) {
 		.filter(group => group.items.length > 0)
 		.sort((a, b) => a.shop.localeCompare(b.shop));
 
-	const shopsList = ['Todas', ...filteredGroups.map(g => g.shop).filter((v, i, arr) => arr.indexOf(v) === i)];
+	const shopsList = ['Todas', ...filteredGroups.map(g => g.shop.toLowerCase()).filter((v, i, arr) => arr.indexOf(v) === i)];
 	let displayedGroups = selectedShopFilter === 'Todas'
 		? filteredGroups
-		: filteredGroups.filter(g => g.shop === selectedShopFilter);
+		: filteredGroups.filter(g => g.shop.toLowerCase() === selectedShopFilter.toLowerCase());
 
 	if (order === 'categoria') {
 		filteredGroups = filteredGroups.map(group => ({
@@ -321,10 +322,10 @@ function ShoppingList({ currentTab, onTabChange }) {
 						setShops={setShops}
 					/>
 				)}
-				<div className="pantry-header flex flex-col items-center justify-center pt-5">
+				<div className="pantry-header flex flex-col items-center justify-center pt-2">
 						<img src="/logoA.png" alt="Logo" className="logoA-img mx-auto mb-2" />
 						<h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miCOMPRA</h2>
-					<div className="pantry-float-actions flex items-center">
+					<div className="pantry-float-actions flex items-center -mt-4">
 						<button className="pantry-float-btn add" title="Añadir ingrediente" onClick={() => setShowAdd(true)}>
 							+
 						</button>
@@ -406,8 +407,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 								});
 								return Object.entries(groupedByShop).map(([shop, items], shopIdx) => (
 									<div key={shop} className="mb-12">
-										<div className="shop-list">{shop}</div>
-										<div className="shopping-list-grid mb-4 mt-6">
+										<div className="shop-list -mb-2">{shop}</div>
+										<div className="shopping-list-grid mb-4 mt-2">
 											{items.map((item, itemIdx) => {
 												const cat = CATEGORY_MAP[item.category] || {};
 												return (

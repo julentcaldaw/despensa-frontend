@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 
-const MyShops = ({ shops, setShops }) => {
+const MyShops = ({ show, onClose, shops = [], setShops }) => {
   const [newShop, setNewShop] = useState("");
   const [addError, setAddError] = useState("");
-
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const token = localStorage.getItem('token');
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
+    if (!show) return;
     if (!token) return;
     fetch(`${API_URL}/myshops`, {
       method: 'GET',
@@ -21,18 +22,20 @@ const MyShops = ({ shops, setShops }) => {
         if (Array.isArray(data)) setShops(data);
       })
       .catch(err => console.error('Error al obtener tiendas:', err));
-  }, [token, API_URL]);
+  }, [token, API_URL, show]);
+
+  if (!show) return null;
 
   const handleAddShop = () => {
     const safeShops = Array.isArray(shops) ? shops : [];
-    const trimmedShop = newShop.trim();
+    const trimmedShop = newShop.trim().toLowerCase();
     setAddError("");
     console.log('Valor enviado al backend:', trimmedShop);
     if (!trimmedShop) {
       setAddError("El nombre de la tienda no puede estar vacío.");
       return;
     }
-    if (safeShops.includes(trimmedShop)) {
+    if (safeShops.map(s => s.name.toLowerCase()).includes(trimmedShop)) {
       setAddError("Esa tienda ya existe en tu lista.");
       return;
     }
@@ -72,8 +75,9 @@ const MyShops = ({ shops, setShops }) => {
       });
   };
 
-  const handleDeleteShop = (shop) => {
-    fetch(`${API_URL}/myshops/${encodeURIComponent(shop)}`, {
+  const handleDeleteShop = (shopName) => {
+    const shopNameLower = shopName.toLowerCase();
+    fetch(`${API_URL}/myshops/${encodeURIComponent(shopNameLower)}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -85,38 +89,60 @@ const MyShops = ({ shops, setShops }) => {
         if (Array.isArray(data)) {
           setShops(data);
         } else {
-          setShops(shops.filter((s) => s !== shop));
+          setShops(shops.filter((s) => s.name.toLowerCase() !== shopNameLower));
         }
       })
       .catch(err => console.error('Error al eliminar tienda:', err));
   };
 
   return (
-    <div className="shops-section">
-      <h3>Mis tiendas</h3>
-      <input
-        type="text"
-        value={newShop}
-        onChange={(e) => {
-          setNewShop(e.target.value);
-          setAddError("");
-        }}
-        placeholder="Añadir nueva tienda"
-      />
-      <button onClick={handleAddShop}>Añadir</button>
-      {addError && <div className="text-red-600 mt-2">{addError}</div>}
-      <ul>
-        {shops && shops.length > 0 ? (
-          shops.map((shop) => (
-            <li key={shop}>
-              {shop}
-              <button onClick={() => handleDeleteShop(shop)} title="Eliminar">🗑</button>
-            </li>
-          ))
-        ) : (
-          <li>No tienes tiendas guardadas.</li>
+    <div className="pantry-modal-bg" onClick={onClose}>
+      <div className="pantry-modal" onClick={e => e.stopPropagation()}>
+        <button className="pantry-modal-close" onClick={onClose}>
+          ×
+        </button>
+        <h3 className="pantry-modal-title">Mis tiendas</h3>
+        <form className="pantry-modal-form" onSubmit={e => { e.preventDefault(); handleAddShop(); }}>
+          <input
+            className="pantry-input"
+            type="text"
+            value={newShop}
+            onChange={e => { setNewShop(e.target.value); setAddError(""); }}
+            placeholder="Añadir nueva tienda"
+            autoFocus
+          />
+          {addError && <div className="pantry-error pantry-error-primary">{addError}</div>}
+          <button className="btn-primary" type="submit">Añadir</button>
+        </form>
+        <ul className="pantry-list flex justify-center items-center" style={{ paddingLeft: 0, marginLeft: 'auto', marginRight: 'auto' }}>
+          {shops && shops.length > 0 ? (
+            <div className="bg-white rounded-xl border-2" style={{ borderColor: 'var(--primary)', margin: '0 auto', maxWidth: '320px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxShadow: '0 2px 16px rgba(0,0,0,0.04)', position: 'relative' }}>
+              {shops.map((shop) => (
+                <li key={shop.id || shop.name} className="pantry-list-item flex items-center justify-center py-3 px-5 mb-2 rounded-lg w-full cursor-pointer group hover:bg-primary-soft transition"
+                  style={{ border: 'none', paddingLeft: 0 }}
+                  onClick={() => setConfirmDeleteId(shop.id)}
+                >
+                  <span className="font-semibold text-gray-800 mx-auto transition group-hover:text-red-600 group-hover:line-through">
+                    {shop.name}
+                  </span>
+                  
+                </li>
+              ))}
+            </div>
+          ) : (
+            <li className="pantry-list-item">No tienes tiendas guardadas.</li>
+          )}
+        </ul>
+        {confirmDeleteId && (
+          <div className="w-full mb-2 flex flex-col items-center" style={{ maxWidth: '320px', margin: '0 auto' }}>
+            <span className="mb-2 text-red-600 font-semibold">¿Eliminar esta tienda?</span>
+            <div className="flex gap-3">
+              <button className="font-semibold px-3 py-1 text-lg" style={{ color: 'var(--primary)', background: 'none', border: 'none' }} onClick={e => { e.stopPropagation(); handleDeleteShop(shops.find(s => s.id === confirmDeleteId).name); setConfirmDeleteId(null); }}>Sí, eliminar</button>
+              <button className="font-semibold px-3 py-1 text-lg" style={{ color: 'var(--primary)', background: 'none', border: 'none' }} onClick={e => { e.stopPropagation(); setConfirmDeleteId(null); }}>Cancelar</button>
+            </div>
+          </div>
         )}
-      </ul>
+      </div>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import DietPreferences from "./DietPreferences";
 import BottomNavigation from "../components/BottomNavigation";
 import { useAuth } from "../utils/AuthContext";
 import EditProfile from "../components/EditProfile";
+import MyShops from "../components/MyShops";
 
 const containerVariants = {
   hidden: {},
@@ -24,8 +25,10 @@ const itemVariants = {
 
 export default function User() {
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showMyShops, setShowMyShops] = useState(false);
   const { user, loading, error, logout, refetchUser } = useAuth();
   const navigate = useNavigate();
+  const [shops, setShops] = useState([]);
 
   function handleLogout() {
     logout();
@@ -40,7 +43,7 @@ export default function User() {
   const settingsIcons = {
     restricciones: <ShieldCheck size={22} />,
     dieta: <Leaf size={22} />,
-    notificaciones: <Bell size={22} />,
+    tiendas: <Package size={22} />,
     logout: <LogOut size={22} />,
   };
 
@@ -132,7 +135,7 @@ export default function User() {
                 })}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                {user.settings && user.settings.filter(item => item.key === 'notificaciones' || item.key === 'logout').map((item) => (
+                {user.settings && user.settings.filter(item => item.key === 'tiendas' || item.key === 'logout').map((item) => (
                   <motion.button
                     key={item.key}
                     className={`user-settings-item${item.key === 'logout' ? " danger" : ""}`}
@@ -141,13 +144,15 @@ export default function User() {
                     onClick={
                       item.key === 'logout'
                         ? handleLogout
+                        : item.key === 'tiendas'
+                        ? () => setShowMyShops(true)
                         : undefined
                     }
                   >
                     <span className={`user-settings-icon user-settings-icon--${item.key === 'logout' ? 'danger' : 'primary'}`}>
                       {settingsIcons[item.key]}
                     </span>
-                    <span className="user-settings-label">{item.label}</span>
+                    <span className="user-settings-label">{item.key === 'tiendas' ? 'Mis tiendas' : item.label}</span>
                     <ArrowRight size={18} className="user-settings-arrow" />
                   </motion.button>
                 ))}
@@ -161,6 +166,9 @@ export default function User() {
             onSaved={refetchUser}
           />
           <BottomNavigation />
+          {showMyShops && (
+            <MyShops show={showMyShops} onClose={() => setShowMyShops(false)} shops={shops} setShops={setShops} />
+          )}
         </div> {/* pantry-container */}
       </div> {/* pantry-main-card */}
     </div> 
