@@ -2,6 +2,7 @@
   "name": "despensa-frontend",
   "version": "1.0.0",
   "private": true,
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
@@ -20,7 +21,7 @@
   },
   "scripts": {
     "start": "webpack serve --mode development --open",
-    "dev": "webpack serve --mode development --open",
+    "dev": "node --trace-deprecation ./node_modules/webpack-cli/bin/cli.js serve --mode development --open",
     "build": "webpack --mode production"
   },
   "devDependencies": {

@@ -129,6 +129,7 @@ export default function DietRestrictions({ onBack, onSave }) {
             className="restrictions-back"
             onClick={onBack ? onBack : () => navigate('/perfil')}
             aria-label="Volver"
+            style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0, margin: 0, outline: 'none', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
           >
             <ArrowLeft size={28} />
           </button>

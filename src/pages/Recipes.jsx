@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { authFetch } from '../utils/auth';
+import { translateText } from '../utils/translate';
 import { useAuth } from '../utils/AuthContext';
 import BottomNavigation from '../components/BottomNavigation';
+import RecipeDetail from '../components/RecipeDetail';
 
 const Recipes = ({ currentTab, onTabChange }) => {
   const { user, loading, error } = useAuth();
@@ -10,6 +11,10 @@ const Recipes = ({ currentTab, onTabChange }) => {
   }
 
   const [recipes, setRecipes] = useState([]);
+  const [translatedRecipes, setTranslatedRecipes] = useState([]);
+  const [translatingIngredients, setTranslatingIngredients] = useState(false);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [translating, setTranslating] = useState(false);
     const [loadingRecipes, setLoadingRecipes] = useState(true);
     const [errorRecipes, setErrorRecipes] = useState('');
   const [customIngredients, setCustomIngredients] = useState('');
@@ -17,23 +22,54 @@ const Recipes = ({ currentTab, onTabChange }) => {
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
+  const SPOONACULAR_API_KEY = process.env.REACT_APP_SPOONACULAR_API_KEY;
+
   const fetchRecipes = async () => {
-      setLoadingRecipes(true);
-      setErrorRecipes('');
+    setLoadingRecipes(true);
+    setErrorRecipes('');
+    setTranslating(true);
+    setTranslatingIngredients(true);
     try {
-      const response = await authFetch('/recipes');
+      const response = await fetch(`https://api.spoonacular.com/recipes/random?number=3&apiKey=${SPOONACULAR_API_KEY}&language=es`);
+      if (response.status === 402) {
+        setErrorRecipes('Has consumido el límite de búsquedas');
+        setLoadingRecipes(false);
+        setTranslating(false);
+        setTranslatingIngredients(false);
+        return;
+      }
       if (!response.ok) throw new Error('Error al buscar recetas');
       const data = await response.json();
-      if (Array.isArray(data)) {
-        setRecipes(data);
+      if (Array.isArray(data.recipes)) {
+        setRecipes(data.recipes);
+        const traducciones = await Promise.all(data.recipes.map(async (r) => {
+          const title = await translateText(r.title || r.name || '');
+          let translatedIngredients = [];
+          if (r.usedIngredients && r.usedIngredients.length > 0) {
+            translatedIngredients = await Promise.all(r.usedIngredients.map(async (i) => {
+              const nameEs = await translateText(i.name);
+              return { ...i, name: nameEs };
+            }));
+          } else if (r.extendedIngredients && r.extendedIngredients.length > 0) {
+            translatedIngredients = await Promise.all(r.extendedIngredients.map(async (i) => {
+              const nameEs = await translateText(i.name);
+              return { ...i, name: nameEs };
+            }));
+          }
+          return { ...r, title, translatedIngredients };
+        }));
+        setTranslatedRecipes(traducciones);
       } else {
         setRecipes([]);
-          setErrorRecipes('La respuesta del servidor no es válida.');
+        setTranslatedRecipes([]);
+        setErrorRecipes('La respuesta del servidor no es válida.');
       }
     } catch (err) {
-        setErrorRecipes(err.message);
+      setErrorRecipes(err.message);
     } finally {
-        setLoadingRecipes(false);
+      setLoadingRecipes(false);
+      setTranslating(false);
+      setTranslatingIngredients(false);
     }
   };
 
@@ -44,41 +80,59 @@ const Recipes = ({ currentTab, onTabChange }) => {
   const handleCustomSearch = async (e) => {
     e.preventDefault();
     setSearching(true);
-      setErrorRecipes('');
+    setErrorRecipes('');
+    setTranslating(true);
+    setTranslatingIngredients(true);
     try {
       const ingredientsArr = customIngredients.split(',').map(i => i.trim()).filter(Boolean);
-      const response = await authFetch('/recipes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredients: ingredientsArr })
-      });
+      const ingredientsParam = ingredientsArr.join(',');
+      let url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredientsParam)}&number=3&apiKey=${SPOONACULAR_API_KEY}&language=es`;
+
+      const response = await fetch(url);
+      if (response.status === 402) {
+        setErrorRecipes('Has consumido el límite de búsquedas');
+        setSearching(false);
+        setTranslating(false);
+        setTranslatingIngredients(false);
+        return;
+      }
       if (!response.ok) throw new Error('Error al buscar recetas personalizadas');
       const data = await response.json();
       if (Array.isArray(data)) {
         setRecipes(data);
+        const traducciones = await Promise.all(data.map(async (r) => {
+          const title = await translateText(r.title || r.name || '');
+          let translatedIngredients = [];
+          if (r.usedIngredients && r.usedIngredients.length > 0) {
+            translatedIngredients = await Promise.all(r.usedIngredients.map(async (i) => {
+              const nameEs = await translateText(i.name);
+              return { ...i, name: nameEs };
+            }));
+          } else if (r.extendedIngredients && r.extendedIngredients.length > 0) {
+            translatedIngredients = await Promise.all(r.extendedIngredients.map(async (i) => {
+              const nameEs = await translateText(i.name);
+              return { ...i, name: nameEs };
+            }));
+          }
+          return { ...r, title, translatedIngredients };
+        }));
+        setTranslatedRecipes(traducciones);
       } else {
         setRecipes([]);
-          setErrorRecipes('La respuesta del servidor no es válida.');
+        setTranslatedRecipes([]);
+        setErrorRecipes('La respuesta del servidor no es válida.');
       }
     } catch (err) {
-        setErrorRecipes(err.message);
+      setErrorRecipes(err.message);
     } finally {
       setSearching(false);
+      setTranslating(false);
+      setTranslatingIngredients(false);
     }
   };
 
   const handleFavorite = async (recipe) => {
-    try {
-      const response = await authFetch('/favorites', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipe_id: recipe.id, title: recipe.title, image: recipe.image })
-      });
-      if (!response.ok) throw new Error('No se pudo agregar a favoritos');
-      alert('Receta agregada a favoritos');
-    } catch (err) {
-      alert(err.message);
-    }
+    alert('Funcionalidad de favoritos solo disponible con backend propio.');
   };
 
   const handleTimeChange = (e) => setSelectedTime(e.target.value);
@@ -123,26 +177,74 @@ const Recipes = ({ currentTab, onTabChange }) => {
             <div className="recipes-loading">Cargando recetas...</div>
           ) : errorRecipes ? (
             <div className="recipes-error">{errorRecipes}</div>
-          ) : recipes.length === 0 ? (
+          ) : (translating || translatingIngredients) ? (
+            <div className="recipes-loading">Traduciendo recetas e ingredientes...</div>
+          ) : translatedRecipes.length === 0 ? (
             <p className="recipes-empty">No se encontraron recetas.</p>
           ) : (
             <ul className="recipes-list">
-              {recipes.map((r) => (
-                <li key={r.id} className="recipes-card">
-                  <div className="recipes-card-content">
-                    <img src={r.image} alt={r.title} className="recipes-card-img" />
-                    <div>
-                      <strong className="recipes-card-title">{r.title}</strong>
-                      <div className="recipes-card-ingredients">
-                        Usados: {r.usedIngredients?.map(i => i.name).join(', ') || '-'}<br />
-                        Faltan: {r.missedIngredients?.map(i => i.name).join(', ') || '-'}
+              {translatedRecipes
+                .filter((r) => {
+                  const cookTime = r.readyInMinutes || r.cookingMinutes || r.preparationMinutes || null;
+                  if (selectedTime && cookTime) {
+                    if (parseInt(selectedTime) !== cookTime && !(selectedTime === '60' && cookTime >= 60)) {
+                      return false;
+                    }
+                  }
+                  if (selectedDifficulty) {
+                    let numIngredients = r.translatedIngredients ? r.translatedIngredients.length : 0;
+                    if (numIngredients === 0 && r.extendedIngredients) numIngredients = r.extendedIngredients.length;
+                    if (selectedDifficulty === 'facil' && numIngredients > 5) return false;
+                    if (selectedDifficulty === 'media' && (numIngredients <= 5 || numIngredients > 10)) return false;
+                    if (selectedDifficulty === 'dificil' && numIngredients <= 10) return false;
+                  }
+                  return true;
+                })
+                .map((r) => {
+                  const title = r.title || r.name || 'Sin título';
+                  const image = r.image || r.imageUrl || '';
+                  let ingredientsList = '';
+                  if (r.translatedIngredients && r.translatedIngredients.length > 0) {
+                    ingredientsList = r.translatedIngredients.map(i => {
+                      let info = i.name;
+                      if (i.amount) info = `${i.amount} ${i.unit || ''} ${info}`;
+                      return info;
+                    }).join(', ');
+                  }
+                  const cookTime = r.readyInMinutes || r.cookingMinutes || r.preparationMinutes || null;
+                  let dificultad = '';
+                  let numIngredients = r.translatedIngredients ? r.translatedIngredients.length : 0;
+                  if (numIngredients === 0 && r.extendedIngredients) numIngredients = r.extendedIngredients.length;
+                  if (numIngredients > 10) dificultad = 'Difícil';
+                  else if (numIngredients > 5) dificultad = 'Media';
+                  else dificultad = 'Fácil';
+                  return (
+                    <li key={r.id || r.recipeId} className="recipes-card" onClick={() => setSelectedRecipe(r)} style={{ cursor: 'pointer' }}>
+                      <div className="recipes-card-content">
+                        <img src={image} alt={title} className="recipes-card-img" />
+                        <div>
+                          <strong className="recipes-card-title">{title}</strong>
+                          <div className="recipes-card-ingredients">
+                            Ingredientes: {ingredientsList ? ingredientsList : 'No disponible'}
+                          </div>
+                          {cookTime && (
+                            <div className="recipes-card-time">
+                              Tiempo: {cookTime} min
+                            </div>
+                          )}
+                          <div className="recipes-card-difficulty">
+                            Dificultad: {dificultad}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <button onClick={() => handleFavorite(r)} className="recipes-fav-btn">❤️ Favorito</button>
-                </li>
-              ))}
+                      <button onClick={(e) => { e.stopPropagation(); handleFavorite(r); }} className="recipes-fav-btn">❤️ Favorito</button>
+                    </li>
+                  );
+                })}
             </ul>
+          )}
+          {selectedRecipe && (
+            <RecipeDetail recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
           )}
           <BottomNavigation currentTab={currentTab} onTabChange={onTabChange} />
         </div>

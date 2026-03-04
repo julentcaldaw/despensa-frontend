@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft, Milk, Wheat, Nut, Fish, Egg, Check, Sprout, WheatOff, MilkOff, Cow, Flame, Droplets, HeartPulse, Filter, Apple, Droplet, Salt, TestTube, Leaf, Trash2
+  ArrowLeft, Fish, Egg, Check, Sprout, MilkOff,  Flame, Leaf
 } from 'lucide-react';
 
 const PREFERENCES = {
@@ -113,6 +113,7 @@ export default function DietPreferences({ onBack, onSave }) {
             className="restrictions-back"
             onClick={onBack ? onBack : () => navigate('/perfil')}
             aria-label="Volver"
+            style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0, margin: 0, outline: 'none', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
           >
             <ArrowLeft size={28} />
           </button>
