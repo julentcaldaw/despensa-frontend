@@ -16,9 +16,11 @@ const CATEGORY_MAP = {
 };
 
 import { authFetch } from '../utils/auth';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import '../shoppingListGrid.css';
 function ShoppingList({ currentTab, onTabChange }) {
+		const location = useLocation();
 	const { user, loading, error } = useAuth();
 				const handleDeleteBought = async () => {
 					const boughtItems = shoppingList.flatMap(group =>
@@ -79,7 +81,14 @@ function ShoppingList({ currentTab, onTabChange }) {
 
 		useEffect(() => {
 			fetchShoppingList();
-		}, []);
+			const handleFocus = () => {
+				fetchShoppingList();
+			};
+			window.addEventListener('focus', handleFocus);
+			return () => {
+				window.removeEventListener('focus', handleFocus);
+			};
+		}, [location.pathname, currentTab]);
 	const [shops, setShops] = useState(["mercadona", "frutería", "deza", "lidl"].map(s => s.toLowerCase()));
 	const [showUser, setShowUser] = useState(false);
 	const [showAdd, setShowAdd] = useState(false);

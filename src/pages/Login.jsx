@@ -4,7 +4,7 @@ import { useAuth } from '../utils/AuthContext';
 import { Mail, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -86,7 +86,7 @@ const Login = () => {
           <button
             type="button"
             onClick={() => navigate('/register')}
-            className="login-register-link bg-transparent border-none p-0 font-inherit cursor-pointer"
+            className="login-register-link p-0 font-inherit cursor-pointer"
           >
             ¿No tienes cuenta? Regístrate
           </button>

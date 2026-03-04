@@ -24,6 +24,16 @@ const itemVariants = {
 };
 
 export default function User() {
+    useEffect(() => {
+      if (refetchUser) refetchUser();
+      const handleFocus = () => {
+        if (refetchUser) refetchUser();
+      };
+      window.addEventListener('focus', handleFocus);
+      return () => {
+        window.removeEventListener('focus', handleFocus);
+      };
+    }, []);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showMyShops, setShowMyShops] = useState(false);
   const { user, loading, error, logout, refetchUser } = useAuth();
@@ -106,7 +116,7 @@ export default function User() {
               </div>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '4rem', marginTop: '1.2rem' }}>
+              <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '3.45rem', marginTop: '1.2rem' }}>
                 {[
                   { key: 'recetasGuardadas', value: user.stats?.recetasGuardadas ?? 0 },
                   { key: 'despensa', value: user.pantryCount ?? 0 },

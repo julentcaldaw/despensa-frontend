@@ -164,7 +164,7 @@ const Recipes = ({ currentTab, onTabChange }) => {
           <form onSubmit={handleCustomSearch} className="recipes-form">
             <input
               type="text"
-              placeholder="Añade los ingredientes"
+              placeholder="Añade lo que necesites"
               value={customIngredients}
               onChange={e => setCustomIngredients(e.target.value)}
               className="recipes-input"

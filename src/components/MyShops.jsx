@@ -5,7 +5,7 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
   const [addError, setAddError] = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const token = localStorage.getItem('token');
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (!show) return;
@@ -134,11 +134,19 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
           )}
         </ul>
         {confirmDeleteId && (
-          <div className="w-full mb-2 flex flex-col items-center max-w-xs mx-auto">
+          <div className="shop-confirm-container">
             <span className="mb-2 text-red-600 font-semibold">¿Eliminar esta tienda?</span>
             <div className="flex gap-3">
-              <button className="font-semibold px-3 py-1 text-lg text-primary bg-transparent border-none" onClick={e => { e.stopPropagation(); handleDeleteShop(shops.find(s => s.id === confirmDeleteId).name); setConfirmDeleteId(null); }}>Sí, eliminar</button>
-              <button className="font-semibold px-3 py-1 text-lg text-primary bg-transparent border-none" onClick={e => { e.stopPropagation(); setConfirmDeleteId(null); }}>Cancelar</button>
+              <div className="flex gap-2 justify-center w-full">
+                <button
+                  className="shop-confirm-btn"
+                  onClick={e => { e.stopPropagation(); handleDeleteShop(shops.find(s => s.id === confirmDeleteId).name); setConfirmDeleteId(null); }}
+                >Sí, eliminar</button>
+                <button
+                  className="shop-confirm-btn"
+                  onClick={e => { e.stopPropagation(); setConfirmDeleteId(null); }}
+                >Cancelar</button>
+              </div>
             </div>
           </div>
         )}
