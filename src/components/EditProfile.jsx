@@ -122,7 +122,7 @@ export default function EditProfileModal({ user, show, onClose, onSaved }) {
           <button
             type="button"
             onClick={onClose}
-            className="login-register-link bg-transparent border-none p-0 font-inherit cursor-pointer"
+            className="login-register-link bg-transparent border-none shadow-none p-0 cursor-pointer"
           >
             Cancelar
           </button>

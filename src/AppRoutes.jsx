@@ -8,7 +8,6 @@ import Pantry from './pages/Pantry';
 import Recipes from './pages/Recipes';
 import ShoppingList from './pages/ShoppingList';
 import User from './pages/User';
-import Layout from './components/Layout';
 import PrivateRoute from './utils/PrivateRoute';
 
 function AppRoutes() {
@@ -20,9 +19,7 @@ function AppRoutes() {
         path="/despensa"
         element={
           <PrivateRoute>
-            <Layout>
-              <Pantry />
-            </Layout>
+            <Pantry />
           </PrivateRoute>
         }
       />
@@ -31,9 +28,7 @@ function AppRoutes() {
         path="/recetas"
         element={
           <PrivateRoute>
-            <Layout>
-              <Recipes />
-            </Layout>
+            <Recipes />
           </PrivateRoute>
         }
       />
@@ -41,9 +36,7 @@ function AppRoutes() {
         path="/listacompra"
         element={
           <PrivateRoute>
-            <Layout>
-              <ShoppingList />
-            </Layout>
+            <ShoppingList />
           </PrivateRoute>
         }
       />
@@ -51,9 +44,7 @@ function AppRoutes() {
         path="/perfil"
         element={
           <PrivateRoute>
-            <Layout>
-              <User />
-            </Layout>
+            <User />
           </PrivateRoute>
         }
       />
@@ -61,9 +52,7 @@ function AppRoutes() {
         path="/restricciones"
         element={
           <PrivateRoute>
-            <Layout>
-              <DietRestrictions />
-            </Layout>
+            <DietRestrictions />
           </PrivateRoute>
         }
       />
@@ -71,9 +60,7 @@ function AppRoutes() {
         path="/dieta"
         element={
           <PrivateRoute>
-            <Layout>
-              <DietPreferences />
-            </Layout>
+            <DietPreferences />
           </PrivateRoute>
         }
       />

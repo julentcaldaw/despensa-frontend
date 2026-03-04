@@ -134,11 +134,11 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
           )}
         </ul>
         {confirmDeleteId && (
-          <div className="w-full mb-2 flex flex-col items-center" style={{ maxWidth: '320px', margin: '0 auto' }}>
+          <div className="w-full mb-2 flex flex-col items-center max-w-xs mx-auto">
             <span className="mb-2 text-red-600 font-semibold">¿Eliminar esta tienda?</span>
             <div className="flex gap-3">
-              <button className="font-semibold px-3 py-1 text-lg" style={{ color: 'var(--primary)', background: 'none', border: 'none' }} onClick={e => { e.stopPropagation(); handleDeleteShop(shops.find(s => s.id === confirmDeleteId).name); setConfirmDeleteId(null); }}>Sí, eliminar</button>
-              <button className="font-semibold px-3 py-1 text-lg" style={{ color: 'var(--primary)', background: 'none', border: 'none' }} onClick={e => { e.stopPropagation(); setConfirmDeleteId(null); }}>Cancelar</button>
+              <button className="font-semibold px-3 py-1 text-lg text-primary bg-transparent border-none" onClick={e => { e.stopPropagation(); handleDeleteShop(shops.find(s => s.id === confirmDeleteId).name); setConfirmDeleteId(null); }}>Sí, eliminar</button>
+              <button className="font-semibold px-3 py-1 text-lg text-primary bg-transparent border-none" onClick={e => { e.stopPropagation(); setConfirmDeleteId(null); }}>Cancelar</button>
             </div>
           </div>
         )}

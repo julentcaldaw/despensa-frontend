@@ -1202,12 +1202,6 @@ body, .login-bg {
   font-size: 1.05rem;
   margin-bottom: 0.2rem;
 }
-.restrictions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.3rem;
-  padding: 0 1.5rem 1.5rem 1.5rem;
-}
 .restriction-card {
   position: relative;
   width: 250px;
