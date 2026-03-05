@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PantryIngredientSelector from '../components/PantryIngredientSelector';
-import { Coffee } from 'lucide-react';
 import { authFetch } from '../utils/auth';
 import { translateText } from '../utils/translate';
 import { useAuth } from '../utils/AuthContext';
@@ -26,7 +25,6 @@ const Recipes = ({ currentTab, onTabChange }) => {
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
-    // Edamam API credentials desde .env
     const EDAMAM_APP_ID = process.env.REACT_APP_EDAMAM_APP_ID;
     const EDAMAM_API_KEY = process.env.REACT_APP_EDAMAM_API_KEY;
 
@@ -40,15 +38,18 @@ const Recipes = ({ currentTab, onTabChange }) => {
     setTranslating(true);
     setTranslatingIngredients(true);
     try {
-      // Consultar recetas al backend (por defecto: "pollo")
       const ingredients = ['pollo'];
       console.log('Enviando ingredientes:', ingredients);
+      const body = { ingredients };
+      if (selectedTime) {
+        body.maxTime = parseInt(selectedTime);
+      }
       const response = await authFetch('/recipes/desde-lista', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ingredients }),
+        body: JSON.stringify(body),
       });
       const data = await response.json();
       console.log('Respuesta del backend:', data);
@@ -83,13 +84,11 @@ const Recipes = ({ currentTab, onTabChange }) => {
 
   useEffect(() => {
     fetchRecipes();
-    // Obtener ingredientes de la despensa al cargar la página
     const fetchPantryIngredients = async () => {
       try {
         const response = await authFetch('/pantry');
         if (!response.ok) throw new Error('Error al cargar la despensa');
         const data = await response.json();
-        // Extraer solo los nombres
         setPantryIngredients(data.map(i => i.name));
       } catch (err) {
         setPantryIngredients([]);
@@ -104,15 +103,23 @@ const Recipes = ({ currentTab, onTabChange }) => {
     setErrorRecipes('');
     setTranslating(true);
     setTranslatingIngredients(true);
+    const ingredientsArr = customIngredients.split(',').map(i => i.trim()).filter(Boolean);
+    fetchRecipesByIngredients(ingredientsArr);
+  };
+
+  const fetchRecipesByIngredients = async (ingredientsArr) => {
     try {
-      const ingredientsArr = customIngredients.split(',').map(i => i.trim()).filter(Boolean);
       console.log('Enviando ingredientes:', ingredientsArr);
+      const body = { ingredients: ingredientsArr };
+      if (selectedTime) {
+        body.maxTime = parseInt(selectedTime);
+      }
       const response = await authFetch('/recipes/desde-lista', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ingredients: ingredientsArr }),
+        body: JSON.stringify(body),
       });
       const data = await response.json();
       console.log('Respuesta del backend:', data);
@@ -154,7 +161,6 @@ const Recipes = ({ currentTab, onTabChange }) => {
 
   return (
     <div className="pantry-bg-main">
-      {/* Overlay para selección de ingredientes */}
       {showPantrySelector && (
         <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-lg w-full relative">
@@ -169,6 +175,16 @@ const Recipes = ({ currentTab, onTabChange }) => {
                     : [...prev, ingredient]
                 );
               }}
+              onSearch={() => {
+                setShowPantrySelector(false);
+                setCustomIngredients(selectedPantryIngredients.join(", "));
+                setSearching(true);
+                setErrorRecipes("");
+                setTranslating(true);
+                setTranslatingIngredients(true);
+                fetchRecipesByIngredients(selectedPantryIngredients);
+              }}
+              onClose={() => setShowPantrySelector(false)}
             />
             <div className="flex flex-col items-center gap-2 mt-6">
               <button
@@ -190,7 +206,6 @@ const Recipes = ({ currentTab, onTabChange }) => {
             <img src="/logoB.png" alt="Logo" className="logoA-img mx-auto mb-2" />
             <h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">misRECETAS</h2>
           </div>
-          {/* ...eliminada la lista de ingredientes del pantry fuera del overlay... */}
           <div className="recipes-filters flex items-center gap-2">
             <button
               type="button"
@@ -227,7 +242,6 @@ const Recipes = ({ currentTab, onTabChange }) => {
               {searching ? 'Buscando...' : 'Buscar'}
             </button>
           </form>
-          {/* Mostrar ingredientes usados si se ha hecho búsqueda por despensa */}
           {loadingRecipes ? (
             <div className="recipes-loading">Cargando recetas...</div>
           ) : errorRecipes ? (
@@ -252,6 +266,36 @@ const Recipes = ({ currentTab, onTabChange }) => {
                     if (selectedDifficulty === 'facil' && numIngredients > 5) return false;
                     if (selectedDifficulty === 'media' && (numIngredients <= 5 || numIngredients > 10)) return false;
                     if (selectedDifficulty === 'dificil' && numIngredients <= 10) return false;
+                  }
+                  if (selectedPantryIngredients.length > 0) {
+                    const normalize = (str) => str
+                      .toLowerCase()
+                      .normalize('NFD')
+                      .replace(/[\u0300-\u036f]/g, '') 
+                      .replace(/s$/,'')
+                      .trim();
+
+                    const recetaIngredientes = r.translatedIngredients?.map(i => normalize(i.name)) || [];
+                    const normSelected = selectedPantryIngredients.map(normalize);
+                    const hayCoincidencia = normSelected.some(normIng =>
+                      recetaIngredientes.some(recIng =>
+                        recIng.includes(normIng) || normIng.includes(recIng)
+                      )
+                    );
+                    if (!hayCoincidencia) {
+                      console.log('NO MATCH:', {
+                        receta: r.title || r.name || r.label,
+                        recetaIngredientes,
+                        seleccionados: normSelected
+                      });
+                    } else {
+                      console.log('MATCH:', {
+                        receta: r.title || r.name || r.label,
+                        recetaIngredientes,
+                        seleccionados: normSelected
+                      });
+                    }
+                    if (!hayCoincidencia) return false;
                   }
                   return true;
                 })
@@ -280,7 +324,12 @@ const Recipes = ({ currentTab, onTabChange }) => {
                         <div>
                           <strong className="recipes-card-title">{title}</strong>
                           <div className="recipes-card-ingredients">
-                            Ingredientes: {ingredientsList ? ingredientsList : 'No disponible'}
+                            Ingredientes: {(() => {
+                              if (!ingredientsList) return 'No disponible';
+                              const words = ingredientsList.split(/\s+/);
+                              if (words.length <= 20) return ingredientsList;
+                              return words.slice(0, 20).join(' ') + '...';
+                            })()}
                           </div>
                           {cookTime && (
                             <div className="recipes-card-time">

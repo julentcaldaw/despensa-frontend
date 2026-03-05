@@ -78,5 +78,12 @@ App
 - Escaneo de códigos QR para añadir ingredientes
 - Gestión y edición de perfil de usuario
 
+## Cambios recientes
+
+- Mejoras visuales en la selección de ingredientes de la despensa:
+	- Los botones de ingredientes ahora tienen más padding vertical y esquinas más redondeadas para una mejor experiencia visual.
+	- Se corrigieron errores de sintaxis JSX y duplicados en el componente `PantryIngredientSelector`.
+	- El código del componente fue limpiado y optimizado para evitar errores de compilación.
+
 ---
 Proyecto para la asignatura DAW. Cualquier contribución o sugerencia es bienvenida.
