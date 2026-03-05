@@ -1,5 +1,4 @@
 import React from 'react';
-import { Sprout } from 'lucide-react';
 
 const PantryIngredientSelector = ({ ingredients, selected, onSelect, onSearch, onClose }) => {
   if (!ingredients || ingredients.length === 0) return null;

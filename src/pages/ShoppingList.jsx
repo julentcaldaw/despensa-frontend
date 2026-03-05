@@ -19,7 +19,6 @@ const CATEGORY_MAP = {
 	snacks_extras: { class: 'category-snack', icon: <Cookie /> }
 };
 
-
 function ShoppingList({ currentTab, onTabChange }) {
 		const location = useLocation();
 	const { user, loading, error } = useAuth();
@@ -287,7 +286,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 			...group,
 			items: group.items
 				.map(item => {
-					// Normaliza el id
 					let id = item.id || item._id || (item.ingredient && item.ingredient.id);
 					return { ...item, id };
 				})
@@ -315,7 +313,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 			items: group.items.slice().reverse()
 		}));
 	}
-
 
 		const hayComprados = shoppingList.some(group => group.items.some(item => item.bought));
 		return (
@@ -462,7 +459,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 														>
 															<ShoppingCart size={18} color="#e74c3c" />
 														</button>
-														{/* {item.bought && <span className="pantry-item-bought-indicator">Comprado</span>} */}
 													</motion.div>
 												);
 											})}
