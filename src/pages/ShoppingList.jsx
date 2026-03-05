@@ -5,6 +5,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import BottomNavigation from '../components/BottomNavigation';
 import { Trash2, Coffee, Egg, Leaf, Fish, Cookie, Salad } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
+import { authFetch } from '../utils/auth';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
+import '../shoppingListGrid.css';
 
 const CATEGORY_MAP = {
 	lacteos_huevos: { class: 'category-dairy', icon: <Egg /> },
@@ -15,10 +19,7 @@ const CATEGORY_MAP = {
 	snacks_extras: { class: 'category-snack', icon: <Cookie /> }
 };
 
-import { authFetch } from '../utils/auth';
-import { useLocation } from 'react-router-dom';
-import { useAuth } from '../utils/AuthContext';
-import '../shoppingListGrid.css';
+
 function ShoppingList({ currentTab, onTabChange }) {
 		const location = useLocation();
 	const { user, loading, error } = useAuth();
@@ -256,7 +257,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
-			// Permitir eliminar aunque bought sea true
 			const response = await authFetch(`/listacompra/${itemId}`, {
 				method: 'DELETE',
 				headers: {

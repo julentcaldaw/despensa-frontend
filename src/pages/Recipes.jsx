@@ -1,28 +1,38 @@
 import React, { useEffect, useState } from 'react';
+import PantryIngredientSelector from '../components/PantryIngredientSelector';
+import { Coffee } from 'lucide-react';
+import { authFetch } from '../utils/auth';
 import { translateText } from '../utils/translate';
 import { useAuth } from '../utils/AuthContext';
 import BottomNavigation from '../components/BottomNavigation';
 import RecipeDetail from '../components/RecipeDetail';
+import { Heart } from 'lucide-react';
+
 
 const Recipes = ({ currentTab, onTabChange }) => {
-  const { user, loading, error } = useAuth();
-  if (!user && !loading) {
-    return <div className="user-profile">Inicia sesión para ver tus recetas.</div>;
-  }
-
-  const [recipes, setRecipes] = useState([]);
-  const [translatedRecipes, setTranslatedRecipes] = useState([]);
-  const [translatingIngredients, setTranslatingIngredients] = useState(false);
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [translating, setTranslating] = useState(false);
+    const [pantryIngredients, setPantryIngredients] = useState([]);
+    const [showPantrySelector, setShowPantrySelector] = useState(false);
+    const [selectedPantryIngredients, setSelectedPantryIngredients] = useState([]);
+    const { user, loading, error } = useAuth();
+    const [recipes, setRecipes] = useState([]);
+    const [translatedRecipes, setTranslatedRecipes] = useState([]);
+    const [translatingIngredients, setTranslatingIngredients] = useState(false);
+    const [selectedRecipe, setSelectedRecipe] = useState(null);
+    const [translating, setTranslating] = useState(false);
     const [loadingRecipes, setLoadingRecipes] = useState(true);
     const [errorRecipes, setErrorRecipes] = useState('');
-  const [customIngredients, setCustomIngredients] = useState('');
-  const [searching, setSearching] = useState(false);
-  const [selectedTime, setSelectedTime] = useState('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('');
+    const [customIngredients, setCustomIngredients] = useState('');
+    const [searching, setSearching] = useState(false);
+    const [selectedTime, setSelectedTime] = useState('');
+    const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
-  const SPOONACULAR_API_KEY = process.env.REACT_APP_SPOONACULAR_API_KEY;
+    // Edamam API credentials desde .env
+    const EDAMAM_APP_ID = process.env.REACT_APP_EDAMAM_APP_ID;
+    const EDAMAM_API_KEY = process.env.REACT_APP_EDAMAM_API_KEY;
+
+    if (!user && !loading) {
+      return <div className="user-profile">Inicia sesión para ver tus recetas.</div>;
+    }
 
   const fetchRecipes = async () => {
     setLoadingRecipes(true);
@@ -30,30 +40,28 @@ const Recipes = ({ currentTab, onTabChange }) => {
     setTranslating(true);
     setTranslatingIngredients(true);
     try {
-      const response = await fetch(`https://api.spoonacular.com/recipes/random?number=3&apiKey=${SPOONACULAR_API_KEY}&language=es`);
-      if (response.status === 402) {
-        setErrorRecipes('Has consumido el límite de búsquedas');
-        setLoadingRecipes(false);
-        setTranslating(false);
-        setTranslatingIngredients(false);
-        return;
-      }
-      if (!response.ok) throw new Error('Error al buscar recetas');
+      // Consultar recetas al backend (por defecto: "pollo")
+      const ingredients = ['pollo'];
+      console.log('Enviando ingredientes:', ingredients);
+      const response = await authFetch('/recipes/desde-lista', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ingredients }),
+      });
       const data = await response.json();
-      if (Array.isArray(data.recipes)) {
-        setRecipes(data.recipes);
-        const traducciones = await Promise.all(data.recipes.map(async (r) => {
-          const title = await translateText(r.title || r.name || '');
+      console.log('Respuesta del backend:', data);
+      if (!response.ok) throw new Error('Error al buscar recetas');
+      if (Array.isArray(data)) {
+        setRecipes(data);
+        const traducciones = await Promise.all(data.map(async (r) => {
+          const title = await translateText(r.title || r.name || r.label || '');
           let translatedIngredients = [];
-          if (r.usedIngredients && r.usedIngredients.length > 0) {
-            translatedIngredients = await Promise.all(r.usedIngredients.map(async (i) => {
-              const nameEs = await translateText(i.name);
-              return { ...i, name: nameEs };
-            }));
-          } else if (r.extendedIngredients && r.extendedIngredients.length > 0) {
-            translatedIngredients = await Promise.all(r.extendedIngredients.map(async (i) => {
-              const nameEs = await translateText(i.name);
-              return { ...i, name: nameEs };
+          if (r.ingredients && r.ingredients.length > 0) {
+            translatedIngredients = await Promise.all(r.ingredients.map(async (i) => {
+              const nameEs = await translateText(i.name || i);
+              return { name: nameEs };
             }));
           }
           return { ...r, title, translatedIngredients };
@@ -75,6 +83,19 @@ const Recipes = ({ currentTab, onTabChange }) => {
 
   useEffect(() => {
     fetchRecipes();
+    // Obtener ingredientes de la despensa al cargar la página
+    const fetchPantryIngredients = async () => {
+      try {
+        const response = await authFetch('/pantry');
+        if (!response.ok) throw new Error('Error al cargar la despensa');
+        const data = await response.json();
+        // Extraer solo los nombres
+        setPantryIngredients(data.map(i => i.name));
+      } catch (err) {
+        setPantryIngredients([]);
+      }
+    };
+    fetchPantryIngredients();
   }, []);
 
   const handleCustomSearch = async (e) => {
@@ -85,33 +106,26 @@ const Recipes = ({ currentTab, onTabChange }) => {
     setTranslatingIngredients(true);
     try {
       const ingredientsArr = customIngredients.split(',').map(i => i.trim()).filter(Boolean);
-      const ingredientsParam = ingredientsArr.join(',');
-      let url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredientsParam)}&number=3&apiKey=${SPOONACULAR_API_KEY}&language=es`;
-
-      const response = await fetch(url);
-      if (response.status === 402) {
-        setErrorRecipes('Has consumido el límite de búsquedas');
-        setSearching(false);
-        setTranslating(false);
-        setTranslatingIngredients(false);
-        return;
-      }
-      if (!response.ok) throw new Error('Error al buscar recetas personalizadas');
+      console.log('Enviando ingredientes:', ingredientsArr);
+      const response = await authFetch('/recipes/desde-lista', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ingredients: ingredientsArr }),
+      });
       const data = await response.json();
+      console.log('Respuesta del backend:', data);
+      if (!response.ok) throw new Error('Error al buscar recetas personalizadas');
       if (Array.isArray(data)) {
         setRecipes(data);
         const traducciones = await Promise.all(data.map(async (r) => {
-          const title = await translateText(r.title || r.name || '');
+          const title = await translateText(r.title || r.name || r.label || '');
           let translatedIngredients = [];
-          if (r.usedIngredients && r.usedIngredients.length > 0) {
-            translatedIngredients = await Promise.all(r.usedIngredients.map(async (i) => {
-              const nameEs = await translateText(i.name);
-              return { ...i, name: nameEs };
-            }));
-          } else if (r.extendedIngredients && r.extendedIngredients.length > 0) {
-            translatedIngredients = await Promise.all(r.extendedIngredients.map(async (i) => {
-              const nameEs = await translateText(i.name);
-              return { ...i, name: nameEs };
+          if (r.ingredients && r.ingredients.length > 0) {
+            translatedIngredients = await Promise.all(r.ingredients.map(async (i) => {
+              const nameEs = await translateText(i.name || i);
+              return { name: nameEs };
             }));
           }
           return { ...r, title, translatedIngredients };
@@ -140,13 +154,53 @@ const Recipes = ({ currentTab, onTabChange }) => {
 
   return (
     <div className="pantry-bg-main">
+      {/* Overlay para selección de ingredientes */}
+      {showPantrySelector && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-lg w-full relative">
+            <h3 className="text-xl font-bold mb-4 text-center">Selecciona ingredientes de tu despensa</h3>
+            <PantryIngredientSelector
+              ingredients={pantryIngredients}
+              selected={selectedPantryIngredients}
+              onSelect={ingredient => {
+                setSelectedPantryIngredients(prev =>
+                  prev.includes(ingredient)
+                    ? prev.filter(i => i !== ingredient)
+                    : [...prev, ingredient]
+                );
+              }}
+            />
+            <div className="flex flex-col items-center gap-2 mt-6">
+              <button
+                className="px-4 py-2 rounded bg-yellow-400 hover:bg-yellow-500 font-bold w-full"
+                onClick={() => {
+                  setShowPantrySelector(false);
+                  setCustomIngredients(selectedPantryIngredients.join(", "));
+                }}
+                disabled={selectedPantryIngredients.length === 0}
+              >Buscar</button>
+              <button className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 w-full" onClick={() => setShowPantrySelector(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="pantry-main-card">
         <div className="pantry-container">
           <div className="pantry-header flex flex-col items-center justify-center pt-5">
             <img src="/logoB.png" alt="Logo" className="logoA-img mx-auto mb-2" />
             <h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">misRECETAS</h2>
           </div>
-          <div className="recipes-filters">
+          {/* ...eliminada la lista de ingredientes del pantry fuera del overlay... */}
+          <div className="recipes-filters flex items-center gap-2">
+            <button
+              type="button"
+              className="recipes-select flex items-center gap-1"
+              onClick={() => {
+                setShowPantrySelector(true);
+              }}
+            >
+              Ingredientes despensa
+            </button>
             <select className="recipes-select" value={selectedTime} onChange={handleTimeChange}>
               <option value="">Tiempo</option>
               <option value="15">15 min</option>
@@ -173,6 +227,7 @@ const Recipes = ({ currentTab, onTabChange }) => {
               {searching ? 'Buscando...' : 'Buscar'}
             </button>
           </form>
+          {/* Mostrar ingredientes usados si se ha hecho búsqueda por despensa */}
           {loadingRecipes ? (
             <div className="recipes-loading">Cargando recetas...</div>
           ) : errorRecipes ? (
@@ -237,7 +292,7 @@ const Recipes = ({ currentTab, onTabChange }) => {
                           </div>
                         </div>
                       </div>
-                      <button onClick={(e) => { e.stopPropagation(); handleFavorite(r); }} className="recipes-fav-btn">❤️ Favorito</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleFavorite(r); }} className="recipes-fav-btn"><Heart size={20} /></button>
                     </li>
                   );
                 })}
