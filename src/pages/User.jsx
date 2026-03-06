@@ -85,7 +85,7 @@ export default function User() {
       <div className="pantry-main-card">
         <div className="pantry-container">
           <div className="pantry-header flex flex-col items-center justify-center pt-5">
-            <img src="/logoC.png" alt="Logo" className="logoA-img mx-auto mb-2" />
+            <img src="/logoB.png" alt="Logo" className="logoA-img mx-auto mb-2" />
             <h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miPERFIL</h2>
           </div>
           <div className="user-columns" style={{ display: 'flex', gap: '2rem' }}>
