@@ -59,7 +59,7 @@ export default function DietRestrictions({ onBack, onSave }) {
   }
 
   useEffect(() => {
-    fetch('/api/enum/diet_restriction')
+    fetch('/enum/diet_restriction')
       .then(res => res.json())
       .then(data => {
         setAllRestrictions(Array.isArray(data.values) ? data.values : []);
@@ -67,7 +67,7 @@ export default function DietRestrictions({ onBack, onSave }) {
 
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('/api/usuario/restricciones', {
+      fetch('/usuario/restricciones', {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then(res => res.json())
@@ -96,7 +96,7 @@ export default function DietRestrictions({ onBack, onSave }) {
       return;
     }
     try {
-      const res = await fetch('/api/usuario/restricciones', {
+      const res = await fetch('/usuario/restricciones', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

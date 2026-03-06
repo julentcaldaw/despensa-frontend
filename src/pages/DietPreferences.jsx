@@ -43,7 +43,7 @@ export default function DietPreferences({ onBack, onSave }) {
   }
 
   useEffect(() => {
-    fetch('/api/enum/diet_preference')
+    fetch('/enum/diet_preference')
       .then(res => res.json())
       .then(data => {
         setAllPreferences(Array.isArray(data.values) ? data.values : []);
@@ -51,7 +51,7 @@ export default function DietPreferences({ onBack, onSave }) {
 
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('/api/usuario/preferencias', {
+      fetch('/usuario/preferencias', {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then(res => res.json())
@@ -80,7 +80,7 @@ export default function DietPreferences({ onBack, onSave }) {
       return;
     }
     try {
-      const res = await fetch('/api/usuario/preferencias', {
+      const res = await fetch('/usuario/preferencias', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
