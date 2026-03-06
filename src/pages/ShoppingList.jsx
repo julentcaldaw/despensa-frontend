@@ -328,10 +328,11 @@ function ShoppingList({ currentTab, onTabChange }) {
 						setShops={setShops}
 					/>
 				)}
-				<div className="pantry-header flex flex-col items-center justify-center pt-2">
-						<img src="/logoB.png" alt="Logo" className="logoA-img mx-auto mb-2" />
-						<h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miCOMPRA</h2>
-					<div className="pantry-float-actions flex items-center -mt-4">
+      					<div className="pantry-header flex flex-col items-center justify-center pt-5 gap-2">
+        					<img src="/logoB.png" alt="Logo" className="logoA-img mx-auto" />
+        					<h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miDESPENSA</h2>
+      					</div>
+     						 <div className="pantry-float-actions">
 						<button className="pantry-float-btn add" title="Añadir ingrediente" onClick={() => setShowAdd(true)}>
 							+
 						</button>
@@ -342,7 +343,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 							</button>
 						)}
 					</div>
-				</div>
 				<div className="pantry-search">
 					<span className="pantry-search-icon">
 						<svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search"><circle cx="8" cy="8" r="7"/><line x1="15" y1="15" x2="12" y2="12"/></svg>

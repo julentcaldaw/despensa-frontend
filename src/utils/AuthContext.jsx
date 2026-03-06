@@ -44,8 +44,33 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // Actualiza datos del usuario (por ejemplo, avatar)
+  const updateUser = async (fields) => {
+    setLoading(true);
+    setError(null);
+    const token = getToken();
+    if (!token) {
+      setError('No autenticado');
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await authFetch('/usuario', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(fields)
+      });
+      if (!res.ok) throw new Error('No se pudo actualizar el usuario');
+      await fetchUser();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout, refetchUser: fetchUser }}>
+    <AuthContext.Provider value={{ user, loading, error, login, logout, refetchUser: fetchUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

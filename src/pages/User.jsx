@@ -8,6 +8,9 @@ import BottomNavigation from "../components/BottomNavigation";
 import { useAuth } from "../utils/AuthContext";
 import EditProfile from "../components/EditProfile";
 import MyShops from "../components/MyShops";
+import AvatarSelector from "../components/AvatarSelector";
+import { Pencil } from 'lucide-react';
+
 
 const containerVariants = {
   hidden: {},
@@ -24,26 +27,43 @@ const itemVariants = {
 };
 
 export default function User() {
-    useEffect(() => {
+  useEffect(() => {
+    if (refetchUser) refetchUser();
+    const handleFocus = () => {
       if (refetchUser) refetchUser();
-      const handleFocus = () => {
-        if (refetchUser) refetchUser();
-      };
-      window.addEventListener('focus', handleFocus);
-      return () => {
-        window.removeEventListener('focus', handleFocus);
-      };
-    }, []);
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showMyShops, setShowMyShops] = useState(false);
-  const { user, loading, error, logout, refetchUser } = useAuth();
+  const { user, loading, error, logout, refetchUser, updateUser } = useAuth();
   const navigate = useNavigate();
   const [shops, setShops] = useState([]);
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
+  const avatarList = [
+    '/avatar/avatar1.jpg',
+    '/avatar/avatar2.jpg',
+    '/avatar/avatar3.jpg',
+    '/avatar/avatar4.jpg',
+    '/avatar/avatar5.jpg',
+    '/avatar/avatar6.jpg',
+  ];
 
   function handleLogout() {
     logout();
     navigate('/login');
   }
+
+  const handleAvatarSelect = async (avatar) => {
+    if (updateUser) {
+      await updateUser({ avatar: avatar.replace('/avatar/', '') });
+      refetchUser();
+    }
+    setShowAvatarSelector(false);
+  };
 
   const statsIcons = {
     recetasGuardadas: <ChefHat size={35} className="user-stats-icon" />,
@@ -71,12 +91,20 @@ export default function User() {
           <div className="user-columns" style={{ display: 'flex', gap: '2rem' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <motion.div className="user-header" variants={itemVariants}>
-                <div className="user-avatar-wrapper">
+                <div className="user-avatar-wrapper" style={{ position: 'relative' }}>
                   <img
-                    src={`/${user.avatar}`}
+                    src={`/avatar/${user.avatar}`}
                     alt="Avatar"
                     className="user-avatar"
                   />
+                  <button
+                    className="user-avatar-edit-btn"
+                    style={{ position: 'absolute', bottom: 0, right: 0, background: 'var(--primary)', color: '#fff', borderRadius: '50%', border: 'none', width: '28px', height: '28px', fontSize: '1.2rem', cursor: 'pointer' }}
+                    onClick={() => setShowAvatarSelector(true)}
+                    title="Cambiar avatar"
+                  >
+                    <Pencil size={15} />
+                  </button>
                 </div>
                 <div className="user-info">
                   <div className="user-name">{user.name}</div>
@@ -178,6 +206,14 @@ export default function User() {
           <BottomNavigation />
           {showMyShops && (
             <MyShops show={showMyShops} onClose={() => setShowMyShops(false)} shops={shops} setShops={setShops} />
+          )}
+          {showAvatarSelector && (
+            <AvatarSelector
+              avatars={avatarList}
+              selectedAvatar={`/avatar/${user.avatar}`}
+              onSelect={handleAvatarSelect}
+              onClose={() => setShowAvatarSelector(false)}
+            />
           )}
         </div> {/* pantry-container */}
       </div> {/* pantry-main-card */}

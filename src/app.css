@@ -1,3 +1,44 @@
+/* Modal para selector de avatar y otros modales */
+.pantry-modal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(31, 41, 55, 0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pantry-modal {
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(31,41,55,0.13), 0 1.5px 4px 0 rgba(31,41,55,0.08);
+  padding: 2.5rem 2.5rem;
+  position: relative;
+  z-index: 1010;
+  max-width: 600px;
+  min-width: 380px;
+  width: 100%;
+  margin: 2.5rem auto;
+}
+
+.pantry-modal-close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1020;
+}
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
@@ -557,10 +598,10 @@ body, .login-bg {
   box-shadow: 0 4px 16px 0 rgba(31,41,55,0.13);
 }
 .pantry-search {
-  border: 1px solid var(--primary-hover);
+  border: 1px solid var(--primary);
   display: flex;
   align-items: center;
-  background: #f3f4f6;
+  background: #fffbee;
   border-radius: 9999px;
   padding: 0.5rem 1rem;
   margin-top: 1rem;
@@ -703,7 +744,8 @@ body, .login-bg {
 .recipes-input {
   flex: 1;
   border: none;
-  background: #f3f4f6;
+  background: #fffbee;
+  border: 1px solid var(--primary);
   border-radius: 9999px;
   padding: 0.7rem 1.2rem;
   font-size: 1rem;
