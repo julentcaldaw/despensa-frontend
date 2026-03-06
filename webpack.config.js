@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const Dotenv = require('dotenv-webpack');
@@ -31,7 +32,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',
     }),
-    // new Dotenv(),
+    new webpack.DefinePlugin({
+      'process.env.REACT_APP_API_URL': JSON.stringify(process.env.REACT_APP_API_URL),
+      'process.env.REACT_APP_EDAMAM_API_KEY': JSON.stringify(process.env.REACT_APP_EDAMAM_API_KEY),
+      'process.env.REACT_APP_EDAMAM_APP_ID': JSON.stringify(process.env.REACT_APP_EDAMAM_APP_ID),
+      'process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY': JSON.stringify(process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY),
+    }),
   ],
   devServer: {
     static: {
