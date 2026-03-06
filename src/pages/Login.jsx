@@ -4,7 +4,7 @@ import { useAuth } from '../utils/AuthContext';
 import { Mail, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = process.env.REACT_APP_API_URL || '/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
