@@ -42,7 +42,7 @@ const Login = () => {
       <div className="login-container">
         <form className="login-card login-card-logo" onSubmit={handleSubmit} autoComplete="off">
           <div className="login-logo-block">
-            <img src="/logoB.png" alt="Logo" className="logoA-img max-w-[180px] w-full h-auto" />
+            <img src="/logoA.png" alt="Logo" className="logoA-img max-w-[180px] w-full h-auto" />
             <p className="login-app-subtitle">Tu cocina inteligente</p>
           </div>
           <h2 className="login-title">Iniciar Sesión</h2>
