@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import AddIngredientShop from "../components/AddIngredientShop";
-import logoB from '../../public/logoB.png';
 import User from "./User";
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNavigation from '../components/BottomNavigation';
@@ -328,7 +327,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 					/>
 				)}
       					<div className="pantry-header flex flex-col items-center justify-center pt-5 gap-2">
-							 <img src={logoB} alt="Logo" className="logoA-img mx-auto" />
+							 <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL + '/logoB.png' : '/logoB.png')} alt="Logo" className="logoA-img mx-auto" />
         					<h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miDESPENSA</h2>
       					</div>
      						 <div className="pantry-float-actions">
