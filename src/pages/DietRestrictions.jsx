@@ -59,7 +59,7 @@ export default function DietRestrictions({ onBack, onSave }) {
   }
 
   useEffect(() => {
-    fetch('/enum/diet_restriction')
+    fetch('/api/enum/diet_restriction')
       .then(res => res.json())
       .then(data => {
         setAllRestrictions(Array.isArray(data.values) ? data.values : []);

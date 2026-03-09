@@ -52,7 +52,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
         setLoadingIngredients(false);
         return;
       }
-      const response = await authFetch(`/api/pantry/${id}`, {
+      const response = await authFetch(`/pantry/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
 
   const fetchAllIngredients = async () => {
     try {
-      const response = await authFetch('/api/ingredients');
+      const response = await authFetch('/ingredients');
       if (!response.ok) throw new Error('Error al cargar ingredientes');
       const data = await response.json();
       setAllIngredients(data);
@@ -88,7 +88,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
     setLoadingIngredients(true);
     setErrorIngredients('');
     try {
-      const response = await authFetch('/api/pantry');
+      const response = await authFetch('/pantry');
       if (!response.ok) throw new Error('Error al cargar el inventario');
       const data = await response.json();
       setIngredients(data);
@@ -123,7 +123,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
       let ingredient = allIngredients.find(i => i.name.toLowerCase() === selectedIngredient.toLowerCase());
       if (!ingredient) {
         const bodyData = { name: selectedIngredient, category: ingredientCategory };
-        const createRes = await authFetch('/api/ingredients', {
+        const createRes = await authFetch('/ingredients', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bodyData)
@@ -132,7 +132,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
         ingredient = await createRes.json();
         setAllIngredients([...allIngredients, ingredient]);
       }
-      const response = await authFetch('/api/pantry', {
+      const response = await authFetch('/pantry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ingredientId: ingredient.id, category: ingredientCategory })      });
@@ -167,7 +167,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
         <div className="pantry-container">
       
       <div className="pantry-header flex flex-col items-center justify-center pt-5 gap-2">
-        <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL + '/logoB.png' : '/logoB.png')} alt="Logo" className="logoA-img mx-auto" />
+        <img src="/logoB.png" alt="Logo" className="logoA-img mx-auto" />
         <h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miDESPENSA</h2>
       </div>
       <div className="pantry-float-actions">

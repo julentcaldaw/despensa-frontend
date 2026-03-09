@@ -43,7 +43,7 @@ export default function DietPreferences({ onBack, onSave }) {
   }
 
   useEffect(() => {
-    fetch('/enum/diet_preference')
+    fetch('/api/enum/diet_preference')
       .then(res => res.json())
       .then(data => {
         setAllPreferences(Array.isArray(data.values) ? data.values : []);

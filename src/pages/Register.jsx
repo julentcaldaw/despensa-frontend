@@ -41,7 +41,7 @@ const Register = () => {
       <div className="login-container">
         <form className="login-card login-card-logo" onSubmit={handleSubmit} autoComplete="off">
           <div className="login-logo-block">
-            <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL + '/logoC.png' : '/logoC.png')} alt="Logo" className="logoA-img" />
+            <img src="/logoC.png" alt="Logo" className="logoA-img" />
             <p className="login-app-subtitle">Tu cocina inteligente</p>
           </div>
           <h2 className="login-title">Registro</h2>

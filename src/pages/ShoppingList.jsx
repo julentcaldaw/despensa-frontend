@@ -20,6 +20,7 @@ const CATEGORY_MAP = {
 };
 
 function ShoppingList({ currentTab, onTabChange }) {
+			const [showAdd, setShowAdd] = useState(false);
 		const location = useLocation();
 	const { user, loading, error } = useAuth();
 				const handleDeleteBought = async () => {
@@ -327,7 +328,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 					/>
 				)}
       					<div className="pantry-header flex flex-col items-center justify-center pt-5 gap-2">
-							 <img src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL + '/logoB.png' : '/logoB.png')} alt="Logo" className="logoA-img mx-auto" />
+							 <img src="/logoB.png" alt="Logo" className="logoA-img mx-auto" />
         					<h2 className="pantry-title text-center font-sans text-[2.5rem] tracking-[.03em] mb-9">miDESPENSA</h2>
       					</div>
      						 <div className="pantry-float-actions">

@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      const res = await authFetch('/api/usuario');
+      const res = await authFetch('/usuario');
       if (!res.ok) throw new Error('No se pudo cargar el perfil');
       const data = await res.json();
       setUser(data);
@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      const res = await authFetch('/api/usuario', {
+      const res = await authFetch('/usuario', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(fields)
