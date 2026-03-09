@@ -227,13 +227,13 @@ const Recipes = ({ currentTab, onTabChange }) => {
             >
               Ingredientes despensa
             </button>
-            <select className="recipes-select" value={selectedTime} onChange={handleTimeChange}>
+            {/* <select className="recipes-select" value={selectedTime} onChange={handleTimeChange}>
               <option value="">Tiempo</option>
               <option value="15">15 min</option>
               <option value="30">30 min</option>
               <option value="45">45 min</option>
               <option value="60">1 hora</option>
-            </select>
+            </select> */}
             <select className="recipes-select" value={selectedDifficulty} onChange={handleDifficultyChange}>
               <option value="">Dificultad</option>
               <option value="facil">Fácil</option>
