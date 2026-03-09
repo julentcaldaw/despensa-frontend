@@ -44,7 +44,7 @@ const Recipes = ({ currentTab, onTabChange }) => {
       if (selectedTime) {
         body.maxTime = parseInt(selectedTime);
       }
-      const response = await authFetch('/recipes/desde-lista', {
+      const response = await authFetch('/api/recipes/desde-lista', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const Recipes = ({ currentTab, onTabChange }) => {
     fetchRecipes();
     const fetchPantryIngredients = async () => {
       try {
-        const response = await authFetch('/pantry');
+        const response = await authFetch('/api/pantry');
         if (!response.ok) throw new Error('Error al cargar la despensa');
         const data = await response.json();
         setPantryIngredients(data.map(i => i.name));

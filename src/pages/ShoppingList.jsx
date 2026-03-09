@@ -36,8 +36,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 							setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 							return;
 						}
-						for (const item of boughtItems) {
-							await authFetch(`/listacompra/${item.id}`, {
+							for (const item of boughtItems) {
+								await authFetch(`/listacompra/${item.id}`, {
 								method: 'DELETE',
 								headers: {
 									'Content-Type': 'application/json',
@@ -91,7 +91,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 		}, [location.pathname, currentTab]);
 	const [shops, setShops] = useState(["mercadona", "frutería", "deza", "lidl"].map(s => s.toLowerCase()));
 	const [showUser, setShowUser] = useState(false);
-	const [showAdd, setShowAdd] = useState(false);
 	const [selectedIngredient, setSelectedIngredient] = useState('');
 	const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras');
 	const [selectedShop, setSelectedShop] = useState(shops[0] || '');
@@ -125,7 +124,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 	}, []);
 
 	const handleAdd = async (newIngredient, newShop, category = ingredientCategory) => {
-		newShop = newShop.toLowerCase();
 		try {
 			setAddIngredientError("");
 			const token = localStorage.getItem('token');
@@ -256,7 +254,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
-			const response = await authFetch(`/listacompra/${itemId}`, {
+			const response = await authFetch(`/api/listacompra/${itemId}`, {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json',

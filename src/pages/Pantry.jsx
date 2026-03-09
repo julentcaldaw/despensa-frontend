@@ -52,7 +52,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
         setLoadingIngredients(false);
         return;
       }
-      const response = await authFetch(`/pantry/${id}`, {
+      const response = await authFetch(`/api/pantry/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
 
   const fetchAllIngredients = async () => {
     try {
-      const response = await authFetch('/ingredients');
+      const response = await authFetch('/api/ingredients');
       if (!response.ok) throw new Error('Error al cargar ingredientes');
       const data = await response.json();
       setAllIngredients(data);
@@ -88,7 +88,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
     setLoadingIngredients(true);
     setErrorIngredients('');
     try {
-      const response = await authFetch('/pantry');
+      const response = await authFetch('/api/pantry');
       if (!response.ok) throw new Error('Error al cargar el inventario');
       const data = await response.json();
       setIngredients(data);
@@ -123,7 +123,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
       let ingredient = allIngredients.find(i => i.name.toLowerCase() === selectedIngredient.toLowerCase());
       if (!ingredient) {
         const bodyData = { name: selectedIngredient, category: ingredientCategory };
-        const createRes = await authFetch('/ingredients', {
+        const createRes = await authFetch('/api/ingredients', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bodyData)
@@ -132,7 +132,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
         ingredient = await createRes.json();
         setAllIngredients([...allIngredients, ingredient]);
       }
-      const response = await authFetch('/pantry', {
+      const response = await authFetch('/api/pantry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ingredientId: ingredient.id, category: ingredientCategory })      });

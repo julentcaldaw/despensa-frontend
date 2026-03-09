@@ -48,7 +48,7 @@ export default function EditProfileModal({ user, show, onClose, onSaved }) {
         body.oldPassword = oldPassword;
         body.newPassword = newPassword;
       }
-      const res = await authFetch("/usuario", {
+      const res = await authFetch("/api/usuario", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
