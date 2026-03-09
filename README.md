@@ -48,22 +48,34 @@ App
 
 ```
 
+## Requisitos previos
+
+- Node.js (versión recomendada: >=16)
+- npm (gestor de paquetes incluido con Node.js)
+
 ## Instalación y uso
 
 1. Clona el repositorio:
-	```bash
-	git clone https://github.com/julentcaldaw/despensa-frontend.git
-	cd despensa-frontend
-	```
+   ```bash
+   git clone https://github.com/julentcaldaw/despensa-frontend.git
+   cd despensa-frontend
+   ```
 2. Instala las dependencias:
-	```bash
-	npm install
-	```
+   ```bash
+   npm install
+   ```
 3. Inicia el servidor de desarrollo:
-	```bash
-	npm start
-	```
+   Puedes usar uno de estos comandos:
+   ```bash
+   npm start
+   # o
+   npm run dev
+   ```
 4. Abre tu navegador en `http://localhost:8080` (o el puerto que indique la terminal).
+
+> No es necesario instalar webpack ni webpack-cli globalmente, ya que están incluidos en las dependencias del proyecto.
+
+> Si el proyecto requiere variables de entorno, revisa si existe un archivo `.env.example` o consulta la documentación interna.
 
 ## Scripts disponibles
 
