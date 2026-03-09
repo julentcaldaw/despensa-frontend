@@ -53,8 +53,11 @@ const Recipes = ({ currentTab, onTabChange }) => {
       });
       const data = await response.json();
       console.log('Respuesta del backend:', data);
-      if (!response.ok) throw new Error('Error al buscar recetas');
+      // Debug: mostrar cada receta individualmente
       if (Array.isArray(data)) {
+        data.forEach((rec, idx) => {
+          console.log(`Receta #${idx}:`, rec);
+        });
         setRecipes(data);
         const traducciones = await Promise.all(data.map(async (r) => {
           const title = await translateText(r.title || r.name || r.label || '');
@@ -65,7 +68,15 @@ const Recipes = ({ currentTab, onTabChange }) => {
               return { name: nameEs };
             }));
           }
-          return { ...r, title, translatedIngredients };
+          // Mantener campos dietRestrictions, dietPreferences y nutrition
+          return {
+            ...r,
+            title,
+            translatedIngredients,
+            dietRestrictions: r.dietRestrictions || [],
+            dietPreferences: r.dietPreferences || [],
+            nutrition: r.nutrition || r.nutritionInfo || null
+          };
         }));
         setTranslatedRecipes(traducciones);
       } else {
