@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logoC from '../../public/logoC.png';
 import { setToken } from '../utils/auth';
 import { useAuth } from '../utils/AuthContext';
 import { Mail, Lock } from 'lucide-react';
@@ -42,7 +43,7 @@ const Login = () => {
       <div className="login-container">
         <form className="login-card login-card-logo" onSubmit={handleSubmit} autoComplete="off">
           <div className="login-logo-block">
-            <img src="/logoC.png" alt="Logo" className="logoA-img" />
+            <img src={logoC} alt="Logo" className="logoA-img" />
             <p className="login-app-subtitle">Tu cocina inteligente</p>
           </div>
           <h2 className="login-title">Iniciar Sesión</h2>
