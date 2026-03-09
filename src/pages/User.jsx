@@ -53,7 +53,6 @@ export default function User() {
     '/avatar/avatar7.jpg',
     '/avatar/avatar8.jpg',
     '/avatar/avatar9.jpg',
-    '/avatar/avatar10.jpg',
   ];
 
   function handleLogout() {
