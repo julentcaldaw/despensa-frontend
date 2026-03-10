@@ -19,12 +19,10 @@ const Scanner = ({ onScan, onClose }) => {
     setProduct(null);
     setLoading(false);
     let qrTimeout = null;
-    // Esperar a que el div esté montado
     if (!scannerRef.current) return;
     scannerRef.current.innerHTML = '';
     try {
       html5QrCodeRef.current = new Html5Qrcode(scannerRef.current.id);
-      // Temporizador para mostrar error de QR tras 10 segundos
       qrTimeout = setTimeout(() => {
         setCameraError('No se detectó ningún código QR. Apunta la cámara a un código válido.');
       }, 10000);
@@ -61,11 +59,12 @@ const Scanner = ({ onScan, onClose }) => {
             html5QrCodeRef.current.stop();
           },
           (errorMessage) => {
-            // Solo mostrar error de permisos, no de QR parse
-            if (errorMessage && !errorMessage.includes('NotFoundException')) {
+            // Ignorar errores de parseo de QR
+            if (errorMessage && errorMessage.toLowerCase().includes('permission')) {
               setCameraError('No se pudo acceder a la cámara. Por favor, concede permisos o revisa la configuración del dispositivo.');
+              console.error('Error de cámara:', errorMessage);
             }
-            console.error('Error de cámara:', errorMessage);
+            // Si no es error de permisos, ignorar y no mostrar nada
           }
         )
         .catch((err) => {
