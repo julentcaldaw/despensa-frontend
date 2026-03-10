@@ -156,3 +156,7 @@ const Scanner = ({ onScan, onClose }) => {
           }
         };
       }, [cameraFacing]);
+
+  };})}
+
+export default Scanner;
