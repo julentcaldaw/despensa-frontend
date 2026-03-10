@@ -14,44 +14,69 @@ const Scanner = ({ onScan, onClose }) => {
 
   useEffect(() => {
     const config = { fps: 10, qrbox: 250 };
-    html5QrCodeRef.current = new Html5Qrcode('scanner');
-    html5QrCodeRef.current
-      .start(
-        { facingMode: cameraFacing },
-        config,
-        async (decodedText, decodedResult) => {
-          if (onScan) onScan(decodedText);
-          setLoading(true);
-          setApiError(null);
-          try {
-            const apiUrl = process.env.REACT_APP_API_URL;
-            const res = await fetch(`${apiUrl}/barcode`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ barcode: decodedText }),
-              credentials: 'include'
-            });
-            const data = await res.json();
-            if (res.ok && data.name) {
-              setProduct(data);
-            } else {
-              setApiError(data.error || 'Producto no encontrado');
+    setCameraError(null);
+    setApiError(null);
+    setProduct(null);
+    setLoading(false);
+    if (scannerRef.current) {
+      scannerRef.current.innerHTML = '';
+    }
+    const scannerElement = document.getElementById('scanner');
+    if (!scannerElement) {
+      setCameraError('No se encontró el elemento del escáner en el DOM.');
+      return;
+    }
+    try {
+      html5QrCodeRef.current = new Html5Qrcode('scanner');
+      html5QrCodeRef.current
+        .start(
+          { facingMode: cameraFacing },
+          config,
+          async (decodedText, decodedResult) => {
+            if (onScan) onScan(decodedText);
+            setLoading(true);
+            setApiError(null);
+            try {
+              const apiUrl = process.env.REACT_APP_API_URL;
+              const res = await fetch(`${apiUrl}/barcode`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ barcode: decodedText }),
+                credentials: 'include'
+              });
+              const data = await res.json();
+              if (res.ok && data.name) {
+                setProduct(data);
+              } else {
+                setApiError(data.error || 'Producto no encontrado');
+              }
+            } catch (err) {
+              setApiError('Error al consultar el backend.');
+              console.error('Error al consultar el backend:', err);
             }
-          } catch (err) {
-            setApiError('Error al consultar el backend.');
+            setLoading(false);
+            html5QrCodeRef.current.stop();
+          },
+          (errorMessage) => {
+            // Detectar error específico de QR parse
+            if (errorMessage && errorMessage.includes('NotFoundException')) {
+              setCameraError('No se detectó ningún código QR. Apunta la cámara a un código válido.');
+            } else {
+              setCameraError('No se pudo acceder a la cámara. Por favor, concede permisos o revisa la configuración del dispositivo.');
+            }
+            console.error('Error de cámara:', errorMessage);
           }
-          setLoading(false);
-          html5QrCodeRef.current.stop();
-        },
-        (errorMessage) => {
-          setCameraError('No se pudo acceder a la cámara. Por favor, concede permisos o revisa la configuración del dispositivo.');
-        }
-      )
-      .catch((err) => {
-        setCameraError('No se pudo iniciar el escáner. Es posible que la cámara no esté disponible o los permisos hayan sido denegados.');
-      });
+        )
+        .catch((err) => {
+          setCameraError('No se pudo iniciar el escáner. Es posible que la cámara no esté disponible o los permisos hayan sido denegados.');
+          console.error('Error al iniciar el escáner:', err);
+        });
+    } catch (err) {
+      setCameraError('Error inesperado al inicializar el escáner.');
+      console.error('Error inesperado:', err);
+    }
     return () => {
       if (html5QrCodeRef.current) {
         html5QrCodeRef.current.stop().catch(() => {});
