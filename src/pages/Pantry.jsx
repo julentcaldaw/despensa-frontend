@@ -132,10 +132,12 @@ const Pantry = ({ currentTab, onTabChange }) => {
         ingredient = await createRes.json();
         setAllIngredients([...allIngredients, ingredient]);
       }
+      // Ya no se debe enviar category al crear en pantry
       const response = await authFetch('/pantry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredientId: ingredient.id, category: ingredientCategory })      });
+        body: JSON.stringify({ ingredientId: ingredient.id })
+      });
       if (!response.ok) {
         const data = await response.json();
         if (response.status === 409) {
@@ -199,7 +201,9 @@ const Pantry = ({ currentTab, onTabChange }) => {
       <div className="pantry-grid">
         <AnimatePresence>
           {filteredIngredients.map(item => {
-            const cat = CATEGORY_MAP[item.category] || {};
+            // La categoría ahora siempre viene de item.ingredient.category
+            const category = item.ingredient && item.ingredient.category ? item.ingredient.category : '';
+            const cat = CATEGORY_MAP[category] || {};
             return (
               <motion.div
                 key={item.id}
@@ -216,7 +220,7 @@ const Pantry = ({ currentTab, onTabChange }) => {
                   {item.name}
                 </span>
                 <span className="pantry-item-category">
-                  {item.category ? item.category.replace(/_/g, ' ').toUpperCase() : 'SIN CATEGORÍA'}
+                  {category ? category.replace(/_/g, ' ').toUpperCase() : 'SIN CATEGORÍA'}
                 </span>
                 <button className="pantry-item-delete" onClick={() => handleDelete(item.id)}>
                   <Trash2 size={18} />

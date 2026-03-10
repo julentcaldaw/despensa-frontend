@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ShoppingCart, User as UserIcon, Heart, ChefHat, Package, LogOut, Settings, Bell, ArrowRight, Leaf, ShieldCheck } from "lucide-react";
+import { ShoppingCart, User as UserIcon, Heart, ChefHat, Package, LogOut, Settings, Bell, ArrowRight, Leaf, ShieldCheck, Receipt } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
 import DietRestrictions from './DietRestrictions';
@@ -77,6 +77,7 @@ export default function User() {
     restricciones: <ShieldCheck size={22} />,
     dieta: <Leaf size={22} />,
     tiendas: <Package size={22} />,
+    compras: <Receipt size={22} />,
     logout: <LogOut size={22} />,
   };
 
@@ -96,7 +97,7 @@ export default function User() {
               <motion.div className="user-header" variants={itemVariants}>
                 <div className="user-avatar-wrapper" style={{ position: 'relative' }}>
                   <img
-                    src={`/avatar/${user.avatar}`}
+                    src={`/avatar/${user.avatar || 'avatar1.jpg'}`}
                     alt="Avatar"
                     className="user-avatar"
                   />
@@ -109,42 +110,45 @@ export default function User() {
                     <Pencil size={15} />
                   </button>
                 </div>
-                <div className="user-info">
-                  <div className="user-name">{user.name}</div>
-                  <div className="user-email">{user.email}</div>
+                <div className="user-info-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1.2rem', width: '100%' }}>
+                  <span className="user-name" style={{ fontWeight: 600, fontSize: '1.25rem' }}>{user.name}</span>
+                  <motion.button
+                    className="user-edit-btn user-settings-item"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => setShowEditProfile(true)}
+                    style={{ padding: '0.4rem 1.2rem', fontSize: '1rem', borderRadius: '1.5rem', background: 'var(--primary)', color: '#fff', border: 'none' }}
+                  >
+                    Editar perfil
+                  </motion.button>
                 </div>
-                <motion.button
-                  className="user-edit-btn"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setShowEditProfile(true)}
-                >
-                  Editar Perfil
-                </motion.button>
               </motion.div>
               <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                {user.settings && user.settings.filter(item => item.key === 'restricciones' || item.key === 'dieta').map((item) => (
                   <motion.button
-                    key={item.key}
-                    className={`user-settings-item`}
+                    className="user-settings-item"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={
-                      item.key === 'restricciones'
-                        ? () => navigate('/restricciones')
-                        : item.key === 'dieta'
-                        ? () => navigate('/dieta')
-                        : undefined
-                    }
+                    onClick={() => navigate('/DietRestrictions')}
                   >
                     <span className="user-settings-icon user-settings-icon--primary">
-                      {settingsIcons[item.key]}
+                      {settingsIcons['restricciones']}
                     </span>
-                    <span className="user-settings-label">{item.label}</span>
+                    <span className="user-settings-label">Restricciones</span>
                     <ArrowRight size={18} className="user-settings-arrow" />
                   </motion.button>
-                ))}
-              </div>
+                  <motion.button
+                    className="user-settings-item"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => navigate('/DietPreferences')}
+                  >
+                    <span className="user-settings-icon user-settings-icon--primary">
+                      {settingsIcons['dieta']}
+                    </span>
+                    <span className="user-settings-label">Preferencias</span>
+                    <ArrowRight size={18} className="user-settings-arrow" />
+                  </motion.button>
+                </div>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', gap: '1.2rem', marginBottom: '3.45rem', marginTop: '1.2rem' }}>
@@ -176,27 +180,45 @@ export default function User() {
                 })}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                {user.settings && user.settings.filter(item => item.key === 'tiendas' || item.key === 'logout').map((item) => (
-                  <motion.button
-                    key={item.key}
-                    className={`user-settings-item${item.key === 'logout' ? " danger" : ""}`}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={
-                      item.key === 'logout'
-                        ? handleLogout
-                        : item.key === 'tiendas'
-                        ? () => setShowMyShops(true)
-                        : undefined
-                    }
-                  >
-                    <span className={`user-settings-icon user-settings-icon--${item.key === 'logout' ? 'danger' : 'primary'}`}>
-                      {settingsIcons[item.key]}
-                    </span>
-                    <span className="user-settings-label">{item.key === 'tiendas' ? 'Mis tiendas' : item.label}</span>
-                    <ArrowRight size={18} className="user-settings-arrow" />
-                  </motion.button>
-                ))}
+                {/* Card Mis Tiendas */}
+                <motion.button
+                  className="user-settings-item"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setShowMyShops(true)}
+                >
+                  <span className="user-settings-icon user-settings-icon--primary">
+                    {settingsIcons["tiendas"]}
+                  </span>
+                  <span className="user-settings-label">Mis tiendas</span>
+                  <ArrowRight size={18} className="user-settings-arrow" />
+                </motion.button>
+                {/* Card Mis Compras */}
+                <motion.button
+                  className="user-settings-item"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => navigate(`/mis-compras`)}
+                >
+                  <span className="user-settings-icon user-settings-icon--primary">
+                    {settingsIcons["compras"]}
+                  </span>
+                  <span className="user-settings-label">Mis compras</span>
+                  <ArrowRight size={18} className="user-settings-arrow" />
+                </motion.button>
+                {/* Card Logout */}
+                <motion.button
+                  className="user-settings-item danger"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleLogout}
+                >
+                  <span className="user-settings-icon user-settings-icon--danger">
+                    {settingsIcons["logout"]}
+                  </span>
+                  <span className="user-settings-label">Cerrar sesión</span>
+                  <ArrowRight size={18} className="user-settings-arrow" />
+                </motion.button>
               </div>
             </div>
           </div>

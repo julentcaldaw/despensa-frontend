@@ -1,3 +1,8 @@
+// Normaliza nombres eliminando espacios extra y poniendo en minúsculas la primera letra
+function normalizeName(name) {
+	if (!name) return '';
+	return name.trim().replace(/\s+/g, ' ').replace(/^./, c => c.toUpperCase()).toLowerCase();
+}
 import React, { useState, useEffect } from "react";
 import AddIngredientShop from "../components/AddIngredientShop";
 import User from "./User";
@@ -20,43 +25,53 @@ const CATEGORY_MAP = {
 };
 
 function ShoppingList({ currentTab, onTabChange }) {
-			const [showAdd, setShowAdd] = useState(false);
-		const location = useLocation();
+	const [showAdd, setShowAdd] = useState(false);
+	const location = useLocation();
 	const { user, loading, error } = useAuth();
-				const handleDeleteBought = async () => {
-					const boughtItems = shoppingList.flatMap(group =>
-						group.items.filter(item => item.bought && item.id)
-					);
-					if (boughtItems.length === 0) {
-						setAuthError('No hay ingredientes comprados para eliminar.');
-						return;
-					}
-					try {
-						const token = localStorage.getItem('token');
-						if (!token) {
-							setAuthError('No hay sesión activa. Por favor, inicia sesión.');
-							return;
-						}
-							for (const item of boughtItems) {
-								await authFetch(`/listacompra/${item.id}`, {
-								method: 'DELETE',
-								headers: {
-									'Content-Type': 'application/json',
-									'Authorization': `Bearer ${token}`
-								}
-							});
-						}
-						await fetchShoppingList();
-					} catch (err) {
-						setAuthError('Error al eliminar ingredientes comprados.');
-					}
-				};
-			const [addIngredientError, setAddIngredientError] = useState("");
-		const [selectedShopFilter, setSelectedShopFilter] = useState('Todas');
+	const [addIngredientError, setAddIngredientError] = useState("");
+	const [selectedShopFilter, setSelectedShopFilter] = useState('Todas');
+	const [shops, setShops] = useState([]);
 	const [shoppingList, setShoppingList] = useState([]);
-		if (!user && !loading) {
-			return <div className="user-profile">Inicia sesión para ver tu lista de la compra</div>;
+	const [allIngredients, setAllIngredients] = useState([]); // Añadido para evitar ReferenceError
+	const [showUser, setShowUser] = useState(false); // Añadido para evitar ReferenceError
+	const [selectedIngredient, setSelectedIngredient] = useState(""); // Añadido para evitar ReferenceError
+
+	const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras'); // Añadido para evitar ReferenceError
+	const [selectedShop, setSelectedShop] = useState(''); // Añadido para evitar ReferenceError
+	const [authError, setAuthError] = useState(""); // Añadido para mostrar errores de autenticación
+
+	if (!user && !loading) {
+		return <div className="user-profile">Inicia sesión para ver tu lista de la compra</div>;
+	}
+
+	const handleDeleteBought = async () => {
+		const boughtItems = shoppingList.flatMap(group =>
+			group.items.filter(item => item.bought && item.id)
+		);
+		if (boughtItems.length === 0) {
+			setAuthError('No hay ingredientes comprados para eliminar.');
+			return;
 		}
+		try {
+			const token = localStorage.getItem('token');
+			if (!token) {
+				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
+				return;
+			}
+			for (const item of boughtItems) {
+				await authFetch(`/listacompra/${item.id}`, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					}
+				});
+			}
+			await fetchShoppingList();
+		} catch (err) {
+			setAuthError('Error al eliminar ingredientes comprados.');
+		}
+	};
 
 		const fetchShoppingList = async () => {
 			try {
@@ -66,7 +81,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 					setShoppingList([]);
 					return;
 				}
-				const response = await authFetch('/listacompra');
+				// Incluye shop e ingredient en la consulta
+				const response = await authFetch('/listacompra?include=shop,ingredient');
 				if (response.status === 401 || response.status === 403) {
 					setAuthError('Sesión expirada o token inválido. Reintenta o cierra sesión.');
 					setShoppingList([]);
@@ -80,23 +96,31 @@ function ShoppingList({ currentTab, onTabChange }) {
 			}
 		};
 
+		// Cargar tiendas del usuario
+		const fetchShops = async () => {
+			try {
+				const token = localStorage.getItem('token');
+				if (!token) return;
+				const response = await authFetch('/myshops');
+				if (response.ok) {
+					const data = await response.json();
+					setShops(Array.isArray(data) ? data : []);
+				}
+			} catch (err) {}
+		};
+
 		useEffect(() => {
 			fetchShoppingList();
+			fetchShops();
 			const handleFocus = () => {
 				fetchShoppingList();
+				fetchShops();
 			};
 			window.addEventListener('focus', handleFocus);
 			return () => {
 				window.removeEventListener('focus', handleFocus);
 			};
 		}, [location.pathname, currentTab]);
-	const [shops, setShops] = useState(["mercadona", "frutería", "deza", "lidl"].map(s => s.toLowerCase()));
-	const [showUser, setShowUser] = useState(false);
-	const [selectedIngredient, setSelectedIngredient] = useState('');
-	const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras');
-	const [selectedShop, setSelectedShop] = useState(shops[0] || '');
-	const [allIngredients, setAllIngredients] = useState([]);
-	const [authError, setAuthError] = useState('');
 
 	useEffect(() => {
 		const fetchAllIngredients = async () => {
@@ -124,7 +148,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 		}
 	}, []);
 
-	const handleAdd = async (newIngredient, newShop, category = ingredientCategory) => {
+
+	const handleAdd = async (newIngredient, newShopId, category = ingredientCategory) => {
 		try {
 			setAddIngredientError("");
 			const token = localStorage.getItem('token');
@@ -132,15 +157,86 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
+
+			// Normalizar nombres antes de buscar o crear
+			const normalizedIngredient = normalizeName(newIngredient);
+			const normalizedShop = normalizeName(newShopId);
+
+			// Buscar el ingrediente por nombre en allIngredients
+			let ingredientObj = allIngredients.find(i => {
+				if (typeof newIngredient === 'object' && newIngredient.id) {
+					return i.id === newIngredient.id;
+				}
+				return i.name && normalizeName(i.name) === normalizedIngredient;
+			});
+			let ingredientId = ingredientObj ? ingredientObj.id : null;
+
+			// Si no existe, crearlo
+			if (!ingredientId) {
+				const res = await authFetch('/ingredients', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+					body: JSON.stringify({ name: normalizedIngredient, category })
+				});
+				if (!res.ok) {
+					setAddIngredientError('No se pudo crear el ingrediente.');
+					return;
+				}
+				const data = await res.json();
+				ingredientId = data.id;
+			}
+
+			// Buscar la tienda por ID en shops
+			let shopObj = shops.find(s => String(s.id) === String(newShopId));
+			let shopId = shopObj ? shopObj.id : null;
+
+			// Si no existe, crearlo (opcional, solo si permites crear tiendas desde el frontend)
+			if (!shopId && normalizedShop && normalizedShop !== '') {
+				const res = await authFetch('/myshops', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+					body: JSON.stringify({ name: normalizedShop })
+				});
+				if (!res.ok) {
+					setAddIngredientError('No se pudo crear la tienda.');
+					return;
+				}
+				const data = await res.json();
+				shopId = data.id;
+			}
+
+			// Validar nombre y tienda antes de enviar
+			let ingredientName = '';
+			let shopName = '';
+			if (ingredientObj && ingredientObj.name) {
+				ingredientName = ingredientObj.name;
+			} else if (typeof newIngredient === 'string') {
+				ingredientName = newIngredient;
+			}
+			if (shopObj && shopObj.name) {
+				shopName = shopObj.name;
+			} else if (typeof newShopId === 'string') {
+				shopName = newShopId;
+			}
+			if (!ingredientId || !shopId || !ingredientName.trim() || !shopName.trim()) {
+				setAddIngredientError('Debes seleccionar un ingrediente y una tienda válidos.');
+				return;
+			}
+
+			// Enviar el formato esperado por el backend
 			const response = await authFetch('/listacompra', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
 				body: JSON.stringify({
 					shoppingList: [
-						{ ingredient: newIngredient, shop: newShop, category }
+						{
+							ingredientId,
+							shopId,
+							category
+						}
 					],
-					shops: [newShop],
-					filters: { category }
+					shops: [shopId],
+					filters: {}
 				})
 			});
 			if (response.status === 401 || response.status === 403) {
@@ -148,12 +244,16 @@ function ShoppingList({ currentTab, onTabChange }) {
 				return;
 			}
 			if (!response.ok) {
-				setAuthError('Error al guardar en la lista de compras.');
-				return;
-			}
-			const data = await response.json();
-			if (data && Array.isArray(data.results) && data.results.length > 0 && data.results[0].error) {
-				setAddIngredientError(data.results[0].error);
+				if (response.status === 400) {
+					try {
+						const errData = await response.json();
+						setAuthError(errData.message || 'Error 400: Datos inválidos.');
+					} catch {
+						setAuthError('Error 400: Datos inválidos.');
+					}
+				} else {
+					setAuthError('Error al guardar en la lista de compras.');
+				}
 				return;
 			}
 			await fetchShoppingList();
@@ -165,23 +265,17 @@ function ShoppingList({ currentTab, onTabChange }) {
 		}
 	};
 
-	useEffect(() => {
-		if (!selectedIngredient) return;
-		const found = allIngredients.find(i => i.name.toLowerCase() === selectedIngredient.toLowerCase());
-		if (found && found.category) {
-			setIngredientCategory(found.category);
-		}
-	}, [selectedIngredient, allIngredients]);
 
-
-	async function markAsBought(id, token) {
+	async function markAsBought(id, token, shopId) {
+		const purchaseDate = new Date().toISOString();
+		// Enviar shopId y purchaseDate
 		const response = await authFetch(`/listacompra/${id}/bought`, {
 			method: 'PATCH',
 			headers: {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`
 			},
-			body: JSON.stringify({ bought: true })
+			body: JSON.stringify({ bought: true, purchaseDate, shopId })
 		});
 		if (!response.ok) {
 			throw new Error('Error al marcar como comprado');
@@ -191,47 +285,40 @@ function ShoppingList({ currentTab, onTabChange }) {
 	}
 
 	const handleBought = async (itemId) => {
-	let foundGroupIdx = -1;
-	let foundItemIdx = -1;
-	for (let gIdx = 0; gIdx < shoppingList.length; gIdx++) {
-		const group = shoppingList[gIdx];
-		const itemIdx = group.items.findIndex(it => it.id === itemId);
-		if (itemIdx !== -1) {
-			foundGroupIdx = gIdx;
-			foundItemIdx = itemIdx;
-			break;
+		let foundGroupIdx = -1;
+		let foundItemIdx = -1;
+		for (let gIdx = 0; gIdx < shoppingList.length; gIdx++) {
+			const group = shoppingList[gIdx];
+			const itemIdx = group.items.findIndex(it => it.id === itemId);
+			if (itemIdx !== -1) {
+				foundGroupIdx = gIdx;
+				foundItemIdx = itemIdx;
+				break;
+			}
 		}
-	}
-	if (foundGroupIdx === -1 || foundItemIdx === -1) {
-		setAuthError('No se encontró el ingrediente para marcar como comprado.');
-		return;
-	}
-	const group = shoppingList[foundGroupIdx];
-	const item = group.items[foundItemIdx];
-	if (!item || !item.id) {
-		setAuthError('No se puede marcar este ingrediente como comprado porque no tiene id.');
-		return;
-	}
-	console.log('Marcando como comprado:', item, 'ID enviado al backend:', item.id);
-	try {
-		const token = localStorage.getItem('token');
-		if (!token) {
-			setAuthError('No hay sesión activa. Por favor, inicia sesión.');
+		if (foundGroupIdx === -1 || foundItemIdx === -1) {
+			setAuthError('No se encontró el ingrediente para marcar como comprado.');
 			return;
 		}
-		setShoppingList(prev => prev.map((group, gIdx) => {
-			if (gIdx !== foundGroupIdx) return group;
-			return {
-				...group,
-				items: group.items.map((it, i) => i === foundItemIdx ? { ...it, bought: true } : it)
-			};
-		}));
-		const itemActualizado = await markAsBought(item.id, token);
-		await fetchShoppingList();
-	} catch (err) {
-		setAuthError(err.message || 'Error de conexión al marcar como comprado.');
-	}
-};
+		const group = shoppingList[foundGroupIdx];
+		const item = group.items[foundItemIdx];
+		if (!item || !item.id) {
+			setAuthError('No se puede marcar este ingrediente como comprado porque no tiene id.');
+			return;
+		}
+		try {
+			const token = localStorage.getItem('token');
+			if (!token) {
+				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
+				return;
+			}
+			// Usar shopId
+			const itemActualizado = await markAsBought(item.id, token, group.shopId || (group.shop && group.shop.id));
+			await fetchShoppingList();
+		} catch (err) {
+			setAuthError(err.message || 'Error de conexión al marcar como comprado.');
+		}
+	};
 
 
 
@@ -296,15 +383,18 @@ function ShoppingList({ currentTab, onTabChange }) {
 		.filter(group => group.items.length > 0)
 		.sort((a, b) => a.shop.localeCompare(b.shop));
 
-	const shopsList = ['Todas', ...filteredGroups.map(g => g.shop.toLowerCase()).filter((v, i, arr) => arr.indexOf(v) === i)];
+
+
+	// Usar lista de tiendas con shopId y nombre, pero para el select solo usar valores string o number
+	const shopsList = ['Todas', ...shops.map(s => s.id)];
 	let displayedGroups = selectedShopFilter === 'Todas'
 		? filteredGroups
-		: filteredGroups.filter(g => g.shop.toLowerCase() === selectedShopFilter.toLowerCase());
+		: filteredGroups.filter(g => (g.shopId || (g.shop && g.shop.id)) === selectedShopFilter);
 
 	if (order === 'categoria') {
 		filteredGroups = filteredGroups.map(group => ({
 			...group,
-			items: group.items.slice().sort((a, b) => (a.category || '').localeCompare(b.category || ''))
+			items: group.items.slice().sort((a, b) => ((a.ingredient && a.ingredient.category) || '').localeCompare((b.ingredient && b.ingredient.category) || ''))
 		}));
 	} else if (order === 'ultimo') {
 		filteredGroups = filteredGroups.map(group => ({
@@ -360,9 +450,10 @@ function ShoppingList({ currentTab, onTabChange }) {
 						<option value="ultimo">Últimos añadidos</option>
 					</select>
 					<select className="pantry-select" value={selectedShopFilter} onChange={e => setSelectedShopFilter(e.target.value)}>
-						{shopsList.map(shop => (
-						  <option key={shop} value={shop}>{shop}</option>
-						))}
+							<option key="Todas" value="Todas">Todas</option>
+							{shops.map(shop => (
+								<option key={shop.id} value={shop.id}>{shop.name}</option>
+							))}
 					</select>
 				</div>
 				<div className="add-ingredient-section mb-5">
@@ -415,7 +506,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 										<div className="shop-list -mb-2">{shop}</div>
 										<div className="shopping-list-grid mb-4 mt-2">
 											{items.map((item, itemIdx) => {
-												const cat = CATEGORY_MAP[item.category] || {};
+												const cat = CATEGORY_MAP[item.ingredient && item.ingredient.category] || {};
 												return (
 													<motion.div
 														key={item.id || item._id || (item.ingredient && item.ingredient.name ? item.ingredient.name : item.ingredient) + item.shop}
@@ -436,10 +527,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 																: item.ingredient
 														}</div>
 														<span className="pantry-item-category">
-															{(item.category
-																? item.category
-																: item.ingredient && item.ingredient.category)
-																? (item.category || item.ingredient.category).replace(/_/g, ' ').toUpperCase()
+															{item.ingredient && item.ingredient.category
+																? item.ingredient.category.replace(/_/g, ' ').toUpperCase()
 																: 'SIN CATEGORÍA'}
 														</span>
 														{!item.id && (<div className="text-red-600 font-bold text-[0.9em] my-2">¡Este ingrediente no tiene id! No se puede eliminar ni marcar como comprado.</div>)}
@@ -470,7 +559,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 								? <div className="shopping-list-grid">
 									{displayedGroups[0].items
 										.map((item, itemIdx) => {
-											const cat = CATEGORY_MAP[item.category] || {};
+											const cat = CATEGORY_MAP[item.ingredient && item.ingredient.category] || {};
 											return (
 												<motion.div
 													key={item.id || item._id || (item.ingredient && item.ingredient.name ? item.ingredient.name : item.ingredient)}
@@ -491,10 +580,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 																: item.ingredient
 													}</div>
 													<span className="pantry-item-category">
-														{(item.category
-															? item.category
-															: item.ingredient && item.ingredient.category)
-															? (item.category || item.ingredient.category).replace(/_/g, ' ').toUpperCase()
+														{item.ingredient && item.ingredient.category
+															? item.ingredient.category.replace(/_/g, ' ').toUpperCase()
 															: 'SIN CATEGORÍA'}
 													</span>
 													<button className="pantry-item-delete" onClick={() => handleDelete(0, itemIdx)}>

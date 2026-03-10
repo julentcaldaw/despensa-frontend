@@ -8,9 +8,12 @@ import Pantry from './pages/Pantry';
 import Recipes from './pages/Recipes';
 import ShoppingList from './pages/ShoppingList';
 import User from './pages/User';
+import PurchaseHistory from './components/PurchaseHistory';
+import { useAuth } from './utils/AuthContext';
 import PrivateRoute from './utils/PrivateRoute';
 
 function AppRoutes() {
+  const { user, loading } = useAuth ? useAuth() : { user: null, loading: false };
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -61,6 +64,20 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <DietPreferences />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/mis-compras"
+        element={
+          <PrivateRoute>
+            {loading ? (
+              <div>Cargando...</div>
+            ) : user && user.id ? (
+              <PurchaseHistory userId={user.id} />
+            ) : (
+              <div>No se encontró el usuario.</div>
+            )}
           </PrivateRoute>
         }
       />

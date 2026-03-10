@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { X } from 'lucide-react';
+import { authFetch } from '../utils/auth';
 
 const AddIngredientShop = ({
   show,
@@ -33,10 +35,7 @@ const AddIngredientShop = ({
               setSelectedIngredient(e.target.value);
               if (e.target.value.trim().length > 1) {
                 try {
-                  const token = localStorage.getItem('token');
-                  const res = await fetch(`/api/ingredients/category?name=${encodeURIComponent(e.target.value)}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                  });
+                  const res = await authFetch(`/ingredients/category?name=${encodeURIComponent(e.target.value)}`);
                   if (res.ok) {
                     const data = await res.json();
                     if (data && data.category) {
@@ -76,8 +75,8 @@ const AddIngredientShop = ({
           >
             <option value="">Selecciona una tienda</option>
             {shops && shops.map(shop => (
-              <option key={shop.id || shop._id || shop} value={shop.id || shop._id || shop}>
-                {shop.name || shop}
+              <option key={shop.id} value={shop.id}>
+                {shop.name}
               </option>
             ))}
           </select>

@@ -19,7 +19,7 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
     })
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data)) setShops(data);
+        if (Array.isArray(data)) setShops(data.filter(s => s.userId));
       })
       .catch(err => console.error('Error al obtener tiendas:', err));
   }, [token, API_URL, show]);
@@ -28,14 +28,13 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
 
   const handleAddShop = () => {
     const safeShops = Array.isArray(shops) ? shops : [];
-    const trimmedShop = newShop.trim().toLowerCase();
+    const trimmedShop = newShop.trim();
     setAddError("");
-    console.log('Valor enviado al backend:', trimmedShop);
     if (!trimmedShop) {
       setAddError("El nombre de la tienda no puede estar vacío.");
       return;
     }
-    if (safeShops.map(s => s.name.toLowerCase()).includes(trimmedShop)) {
+    if (safeShops.map(s => s.name.toLowerCase()).includes(trimmedShop.toLowerCase())) {
       setAddError("Esa tienda ya existe en tu lista.");
       return;
     }
@@ -45,7 +44,7 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ shop: trimmedShop }),
+      body: JSON.stringify({ name: trimmedShop }),
       credentials: 'include'
     })
       .then(async res => {
@@ -63,9 +62,9 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
           return;
         }
         if (Array.isArray(data)) {
-          setShops(data);
+          setShops(data.filter(s => s.userId));
         } else {
-          setShops([...safeShops, trimmedShop]);
+          setShops([...safeShops, data]);
         }
         setNewShop("");
       })
@@ -75,9 +74,8 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
       });
   };
 
-  const handleDeleteShop = (shopName) => {
-    const shopNameLower = shopName.toLowerCase();
-    fetch(`${API_URL}/myshops/${encodeURIComponent(shopNameLower)}`, {
+  const handleDeleteShop = (shopId) => {
+    fetch(`${API_URL}/myshops/${encodeURIComponent(shopId)}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -87,9 +85,9 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setShops(data);
+          setShops(data.filter(s => s.userId));
         } else {
-          setShops(shops.filter((s) => s.name.toLowerCase() !== shopNameLower));
+          setShops(shops.filter((s) => s.id !== shopId));
         }
       })
       .catch(err => console.error('Error al eliminar tienda:', err));
@@ -118,14 +116,13 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
           {shops && shops.length > 0 ? (
             <div className="bg-white rounded-xl border-2" style={{ borderColor: 'var(--primary)', margin: '0 auto', maxWidth: '320px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxShadow: '0 2px 16px rgba(0,0,0,0.04)', position: 'relative' }}>
               {shops.map((shop) => (
-                <li key={shop.id || shop.name} className="pantry-list-item flex items-center justify-center py-3 px-5 mb-2 rounded-lg w-full cursor-pointer group hover:bg-primary-soft transition"
+                <li key={shop.id} className="pantry-list-item flex items-center justify-center py-3 px-5 mb-2 rounded-lg w-full cursor-pointer group hover:bg-primary-soft transition"
                   style={{ border: 'none', paddingLeft: 0 }}
                   onClick={() => setConfirmDeleteId(shop.id)}
                 >
                   <span className="font-semibold text-gray-800 mx-auto transition group-hover:text-red-600 group-hover:line-through">
                     {shop.name}
                   </span>
-                  
                 </li>
               ))}
             </div>
@@ -140,7 +137,7 @@ const MyShops = ({ show, onClose, shops = [], setShops }) => {
               <div className="flex gap-2 justify-center w-full">
                 <button
                   className="shop-confirm-btn"
-                  onClick={e => { e.stopPropagation(); handleDeleteShop(shops.find(s => s.id === confirmDeleteId).name); setConfirmDeleteId(null); }}
+                  onClick={e => { e.stopPropagation(); handleDeleteShop(confirmDeleteId); setConfirmDeleteId(null); }}
                 >Sí, eliminar</button>
                 <button
                   className="shop-confirm-btn"
