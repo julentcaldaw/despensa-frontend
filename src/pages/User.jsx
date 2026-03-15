@@ -8,6 +8,7 @@ import BottomNavigation from "../components/BottomNavigation";
 import { useAuth } from "../utils/AuthContext";
 import EditProfile from "../components/EditProfile";
 import MyShops from "../components/MyShops";
+import MyOrders from "../components/MyOrders";
 import AvatarSelector from "../components/AvatarSelector";
 import { Pencil } from 'lucide-react';
 
@@ -27,20 +28,11 @@ const itemVariants = {
 };
 
 export default function User() {
-  useEffect(() => {
-    if (refetchUser) refetchUser();
-    const handleFocus = () => {
-      if (refetchUser) refetchUser();
-    };
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
-  const [showEditProfile, setShowEditProfile] = useState(false);
-  const [showMyShops, setShowMyShops] = useState(false);
   const { user, loading, error, logout, refetchUser, updateUser } = useAuth();
   const navigate = useNavigate();
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showMyShops, setShowMyShops] = useState(false);
+  const [showMyOrders, setShowMyOrders] = useState(false);
   const [shops, setShops] = useState([]);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const avatarList = [
@@ -54,6 +46,17 @@ export default function User() {
     '/avatar/avatar8.jpg',
     '/avatar/avatar9.jpg',
   ];
+
+  useEffect(() => {
+    if (refetchUser) refetchUser();
+    const handleFocus = () => {
+      if (refetchUser) refetchUser();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
 
   function handleLogout() {
     logout();
@@ -77,6 +80,7 @@ export default function User() {
     restricciones: <ShieldCheck size={22} />,
     dieta: <Leaf size={22} />,
     tiendas: <Package size={22} />,
+    compras: <ShoppingCart size={22} />,
     logout: <LogOut size={22} />,
   };
 
@@ -176,27 +180,45 @@ export default function User() {
                 })}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                {user.settings && user.settings.filter(item => item.key === 'tiendas' || item.key === 'logout').map((item) => (
-                  <motion.button
-                    key={item.key}
-                    className={`user-settings-item${item.key === 'logout' ? " danger" : ""}`}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={
-                      item.key === 'logout'
-                        ? handleLogout
-                        : item.key === 'tiendas'
-                        ? () => setShowMyShops(true)
-                        : undefined
-                    }
-                  >
-                    <span className={`user-settings-icon user-settings-icon--${item.key === 'logout' ? 'danger' : 'primary'}`}>
-                      {settingsIcons[item.key]}
-                    </span>
-                    <span className="user-settings-label">{item.key === 'tiendas' ? 'Mis tiendas' : item.label}</span>
-                    <ArrowRight size={18} className="user-settings-arrow" />
-                  </motion.button>
-                ))}
+                {/* Botón Mis Tiendas */}
+                <motion.button
+                  className="user-settings-item"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setShowMyShops(true)}
+                >
+                  <span className="user-settings-icon user-settings-icon--primary">
+                    {settingsIcons.tiendas}
+                  </span>
+                  <span className="user-settings-label">Mis tiendas</span>
+                  <ArrowRight size={18} className="user-settings-arrow" />
+                </motion.button>
+                {/* Botón Mis Compras */}
+                <motion.button
+                  className="user-settings-item"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setShowMyOrders(true)}
+                >
+                  <span className="user-settings-icon user-settings-icon--primary">
+                    {settingsIcons.compras}
+                  </span>
+                  <span className="user-settings-label">Mis compras</span>
+                  <ArrowRight size={18} className="user-settings-arrow" />
+                </motion.button>
+                {/* Botón Logout */}
+                <motion.button
+                  className="user-settings-item danger"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleLogout}
+                >
+                  <span className="user-settings-icon user-settings-icon--danger">
+                    {settingsIcons.logout}
+                  </span>
+                  <span className="user-settings-label">Cerrar sesión</span>
+                  <ArrowRight size={18} className="user-settings-arrow" />
+                </motion.button>
               </div>
             </div>
           </div>
@@ -209,6 +231,12 @@ export default function User() {
           <BottomNavigation />
           {showMyShops && (
             <MyShops show={showMyShops} onClose={() => setShowMyShops(false)} shops={shops} setShops={setShops} />
+          )}
+          {showMyOrders && (
+            <>
+              <MyOrders />
+              <button className="orders-close-btn" onClick={() => setShowMyOrders(false)} style={{marginTop: '1rem'}}>Cerrar</button>
+            </>
           )}
           {showAvatarSelector && (
             <AvatarSelector
