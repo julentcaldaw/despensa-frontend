@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ShoppingCart, User as UserIcon, Heart, ChefHat, Package, LogOut, Settings, Bell, ArrowRight, Leaf, ShieldCheck, Receipt } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import BottomNavigation from "../components/BottomNavigation";
 import { useAuth } from "../utils/AuthContext";
 import EditProfile from "../components/EditProfile";
@@ -28,9 +28,9 @@ const itemVariants = {
 export default function User() {
   const { user, loading, error, logout, refetchUser, updateUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showMyShops, setShowMyShops] = useState(false);
-  const [showMyOrders, setShowMyOrders] = useState(false);
   const [shops, setShops] = useState([]);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const avatarList = [
@@ -199,7 +199,7 @@ export default function User() {
                   className="user-settings-item"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => setShowMyOrders(true)}
+                  onClick={() => navigate('/usuario/miscompras')}
                 >
                   <span className="user-settings-icon user-settings-icon--primary">
                     {settingsIcons.compras}
@@ -207,6 +207,7 @@ export default function User() {
                   <span className="user-settings-label">Mis compras</span>
                   <ArrowRight size={18} className="user-settings-arrow" />
                 </motion.button>
+                
                 {/* Botón Logout */}
                 <motion.button
                   className="user-settings-item danger"
@@ -233,11 +234,11 @@ export default function User() {
           {showMyShops && (
             <MyShops show={showMyShops} onClose={() => setShowMyShops(false)} shops={shops} setShops={setShops} />
           )}
-          {showMyOrders && (
-            <>
-              <MyOrders />
-              <button className="orders-close-btn" onClick={() => setShowMyOrders(false)} style={{marginTop: '1rem'}}>Cerrar</button>
-            </>
+          {location.pathname === '/usuario/miscompras' && (
+            <MyOrders
+              onClose={() => navigate('/usuario')}
+              show={true}
+            />
           )}
           {showAvatarSelector && (
             <AvatarSelector

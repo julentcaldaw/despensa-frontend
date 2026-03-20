@@ -54,26 +54,26 @@ const MyOrders = ({ show = true, onClose }) => {
 				) : (
 					<ul className="pantry-list flex justify-center items-center" style={{ paddingLeft: 0, marginLeft: 'auto', marginRight: 'auto' }}>
 						<div className="bg-white rounded-xl border-2" style={{ borderColor: 'var(--primary)', margin: '0 auto', maxWidth: '320px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxShadow: '0 2px 16px rgba(0,0,0,0.04)', position: 'relative' }}>
-							{orders.map((order, idx) => (
-								<motion.li
-									key={order.id || idx}
-									className="pantry-list-item flex flex-col items-center justify-center py-3 px-5 mb-2 rounded-lg w-full group hover:bg-primary-soft transition"
-									style={{ border: 'none', paddingLeft: 0 }}
-									initial={{ scale: 0.8, opacity: 0 }}
-									animate={{ scale: 1, opacity: 1 }}
-									transition={{ duration: 0.22 }}
-								>
-									<span className="font-semibold text-gray-800 mx-auto mb-1">
-										{order.name || (order.ingredient && order.ingredient.name) || 'Ingrediente'}
-									</span>
-									<span className="text-sm text-gray-700 mb-1">
-										Supermercado: <b>{order.shop || (order.ingredient && order.ingredient.shop) || 'Desconocido'}</b>
-									</span>
-									<span className="text-sm text-gray-700">
-										Fecha de compra: <b>{order.boughtDate ? new Date(order.boughtDate).toLocaleString() : 'Sin fecha'}</b>
-									</span>
-								</motion.li>
-							))}
+							{orders.map((order, idx) => {
+								// Unificación de datos
+								const name = order.name || (order.ingredient && order.ingredient.name) || 'Ingrediente';
+								const shop = order.shop || (order.ingredient && order.ingredient.shop) || 'Desconocido';
+								const date = order.boughtDate ? new Date(order.boughtDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Sin fecha';
+								return (
+									<motion.li
+										key={order.id || idx}
+										className="pantry-list-item flex flex-col items-center justify-center py-3 px-5 mb-2 rounded-lg w-full group hover:bg-primary-soft transition"
+										style={{ border: 'none', paddingLeft: 0 }}
+										initial={{ scale: 0.8, opacity: 0 }}
+										animate={{ scale: 1, opacity: 1 }}
+										transition={{ duration: 0.22 }}
+									>
+									<span className="font-semibold text-gray-800 mx-auto mb-1">{name}</span>
+									<span className="text-sm text-gray-700 mb-1">Supermercado: <b>{shop}</b></span>
+									<span className="text-sm text-gray-700">Fecha de compra: <b>{date}</b></span>
+									</motion.li>
+								);
+							})}
 						</div>
 					</ul>
 				)}

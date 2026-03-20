@@ -260,7 +260,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 
 	async function markAsBought(id, token, shopId) {
 		const purchaseDate = new Date().toISOString();
-		// No enviar category, solo los campos requeridos
 		const response = await authFetch(`/listacompra/${id}/bought`, {
 			method: 'PATCH',
 			headers: {
