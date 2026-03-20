@@ -43,7 +43,7 @@ const MyOrders = ({ show = true, onClose }) => {
 	return (
 		<div className="pantry-modal-bg" onClick={onClose}>
 			<div className="pantry-modal" onClick={e => e.stopPropagation()}>
-				<button className="pantry-modal-close" onClick={() => navigate('/perfil')}>×</button>
+				<button className="pantry-modal-close" onClick={() => navigate('/usuario')}>×</button>
 				<h3 className="pantry-modal-title">Historial de compras</h3>
 				{loading ? (
 					<div className="orders-loading">Cargando historial...</div>

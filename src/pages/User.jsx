@@ -129,7 +129,7 @@ export default function User() {
                     className="user-settings-item"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => navigate('/DietRestrictions')}
+                    onClick={() => navigate('/restricciones')}
                   >
                     <span className="user-settings-icon user-settings-icon--primary">
                       {settingsIcons['restricciones']}
@@ -141,7 +141,7 @@ export default function User() {
                     className="user-settings-item"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => navigate('/DietPreferences')}
+                    onClick={() => navigate('/preferencias')}
                   >
                     <span className="user-settings-icon user-settings-icon--primary">
                       {settingsIcons['dieta']}

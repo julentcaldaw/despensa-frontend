@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authFetch } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { motion } from 'framer-motion';
@@ -38,31 +39,45 @@ export default function DietPreferences({ onBack, onSave }) {
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  if (!user && !loading) {
+  if (loading) {
+    return <div className="user-profile">Cargando...</div>;
+  }
+  if (!user) {
     return <div className="user-profile">Inicia sesión para ver tus preferencias.</div>;
   }
 
   useEffect(() => {
-    fetch('/api/enum/diet_preference')
-      .then(res => res.json())
-      .then(data => {
+    authFetch('/enum/diet_preference')
+      .then(async res => {
+        let data;
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error('Error al cargar tipos de preferencia: ' + errorText);
+        } else {
+          data = await res.json();
+        }
         setAllPreferences(Array.isArray(data.values) ? data.values : []);
+      })
+      .catch(err => {
+        setErrorMsg(err.message || 'Error de red al cargar tipos de preferencia.');
       });
 
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetch('/usuario/preferencias', {
-        headers: { Authorization: `Bearer ${token}` },
+    authFetch('/enum/diet_preference')
+      .then(async res => {
+        let data;
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error('Error al cargar preferencias: ' + errorText);
+        } else {
+          data = await res.json();
+        }
+        if (data) setSelected(Array.isArray(data.preferences) ? data.preferences : []);
+        setLoadingPreferences(false);
       })
-        .then(res => res.json())
-        .then(data => {
-          setSelected(Array.isArray(data.preferences) ? data.preferences : []);
-          setLoadingPreferences(false);
-        })
-        .catch(() => setLoadingPreferences(false));
-    } else {
-      setLoadingPreferences(false);
-    }
+      .catch(err => {
+        setErrorMsg(err.message || 'Error de red al cargar preferencias.');
+        setLoadingPreferences(false);
+      });
   }, []);
 
   const handleToggle = key => {
@@ -74,27 +89,28 @@ export default function DietPreferences({ onBack, onSave }) {
   const handleSave = async () => {
     setSuccessMsg('');
     setErrorMsg('');
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setErrorMsg('No autenticado.');
-      return;
-    }
     try {
-      const res = await fetch('/usuario/preferencias', {
+      const res = await authFetch('/preferencias', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ preferences: selected }),
       });
-      const data = await res.json();
-      if (res.ok && data.message) {
+      let data;
+      if (!res.ok) {
+        const errorText = await res.text();
+        setErrorMsg(errorText || 'Error al guardar.');
+        return;
+      } else {
+        data = await res.json();
+      }
+      if (data && data.message) {
         setSuccessMsg(data.message);
         setSelected(Array.isArray(data.preferences) ? data.preferences : selected);
         if (onSave) onSave(data.preferences);
       } else {
-        setErrorMsg(data.message || 'Error al guardar.');
+        setErrorMsg((data && data.message) || 'Error al guardar.');
       }
     } catch (err) {
       setErrorMsg('Error de red.');
@@ -111,7 +127,7 @@ export default function DietPreferences({ onBack, onSave }) {
         <header className="restrictions-header">
           <button
             className="restrictions-back"
-            onClick={onBack ? onBack : () => navigate('/perfil')}
+            onClick={onBack ? onBack : () => navigate('/usuario')}
             aria-label="Volver"
             style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0, margin: 0, outline: 'none', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
           >

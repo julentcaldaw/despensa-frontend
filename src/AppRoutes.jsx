@@ -44,7 +44,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/perfil"
+        path="/usuario"
         element={
           <PrivateRoute>
             <User />
@@ -60,7 +60,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/dieta"
+        path="/preferencias"
         element={
           <PrivateRoute>
             <DietPreferences />

@@ -304,7 +304,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
-			const itemActualizado = await markAsBought(item.id, token, group.shopId || (group.shop && group.shop.id));
+			await markAsBought(item.id, token, group.shopId || (group.shop && group.shop.id));
+			// Actualiza la lista inmediatamente después de marcar como comprado
 			await fetchShoppingList();
 		} catch (err) {
 			setAuthError(err.message || 'Error de conexión al marcar como comprado.');

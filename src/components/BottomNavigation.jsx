@@ -6,7 +6,7 @@ const NAV_ITEMS = [
   { key: '/despensa', label: 'Despensa', icon: Package },
   { key: '/recetas', label: 'Recetas', icon: ChefHat },
   { key: '/listacompra', label: 'Lista', icon: ShoppingCart },
-  { key: '/perfil', label: 'Perfil', icon: UserIcon }
+  { key: '/usuario', label: 'Perfil', icon: UserIcon }
 ];
 
 const BottomNavigation = () => {

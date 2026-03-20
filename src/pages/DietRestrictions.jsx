@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authFetch } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { motion } from 'framer-motion';
@@ -45,8 +46,9 @@ const cardVariants = {
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 60 } },
 };
 
+
 export default function DietRestrictions({ onBack, onSave }) {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const { user, loading, error } = useAuth();
   const [allRestrictions, setAllRestrictions] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -54,31 +56,46 @@ export default function DietRestrictions({ onBack, onSave }) {
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  if (!user && !loading) {
+
+  if (loading) {
+    return <div className="user-profile">Cargando...</div>;
+  }
+  if (!user) {
     return <div className="user-profile">Inicia sesión para ver tus restricciones.</div>;
   }
 
   useEffect(() => {
-    fetch('/api/enum/diet_restriction')
-      .then(res => res.json())
+    authFetch('/enum/diet_restriction')
+      .then(async res => {
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error('Error al cargar tipos de restricción: ' + errorText);
+        }
+        return res.json();
+      })
       .then(data => {
         setAllRestrictions(Array.isArray(data.values) ? data.values : []);
+      })
+      .catch(err => {
+        setErrorMsg(err.message || 'Error de red al cargar tipos de restricción.');
       });
 
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetch('/usuario/restricciones', {
-        headers: { Authorization: `Bearer ${token}` },
+    authFetch('/usuario/restricciones')
+      .then(async res => {
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error('Error al cargar restricciones: ' + errorText);
+        }
+        return res.json();
       })
-        .then(res => res.json())
-        .then(data => {
-          setSelected(Array.isArray(data.restrictions) ? data.restrictions : []);
-          setLoadingRestrictions(false);
-        })
-        .catch(() => setLoadingRestrictions(false));
-    } else {
-      setLoadingRestrictions(false);
-    }
+      .then(data => {
+        if (data) setSelected(Array.isArray(data.restrictions) ? data.restrictions : []);
+        setLoadingRestrictions(false);
+      })
+      .catch(err => {
+        setErrorMsg(err.message || 'Error de red al cargar restricciones.');
+        setLoadingRestrictions(false);
+      });
   }, []);
 
   const handleToggle = key => {
@@ -90,17 +107,11 @@ export default function DietRestrictions({ onBack, onSave }) {
   const handleSave = async () => {
     setSuccessMsg('');
     setErrorMsg('');
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setErrorMsg('No autenticado.');
-      return;
-    }
     try {
-      const res = await fetch('/usuario/restricciones', {
+      const res = await authFetch('/usuario/restricciones', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ restrictions: selected }),
       });
@@ -127,7 +138,7 @@ export default function DietRestrictions({ onBack, onSave }) {
         <header className="restrictions-header">
           <button
             className="restrictions-back"
-            onClick={onBack ? onBack : () => navigate('/perfil')}
+            onClick={onBack ? onBack : () => navigate('/usuario')}
             aria-label="Volver"
             style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0, margin: 0, outline: 'none', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
           >
