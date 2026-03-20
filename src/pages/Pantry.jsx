@@ -200,8 +200,8 @@ const Pantry = ({ currentTab, onTabChange }) => {
       <div className="pantry-grid">
         <AnimatePresence>
           {filteredIngredients.map(item => {
-            // La categoría ahora siempre viene de item.ingredient.category
-            const category = item.ingredient && item.ingredient.category ? item.ingredient.category : '';
+            // Permitir categoría en item.category o item.ingredient.category
+            const category = item.category || (item.ingredient && item.ingredient.category) || '';
             const cat = CATEGORY_MAP[category] || {};
             return (
               <motion.div

@@ -494,7 +494,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 										<div className="shop-list -mb-2">{shop}</div>
 										<div className="shopping-list-grid mb-4 mt-2">
 											{items.map((item, itemIdx) => {
-												const cat = CATEGORY_MAP[item.ingredient && item.ingredient.category] || {};
+												const category = item.category || (item.ingredient && item.ingredient.category) || '';
+												const cat = CATEGORY_MAP[category] || {};
 												return (
 													<motion.div
 														key={item.id || item._id || (item.ingredient && item.ingredient.name ? item.ingredient.name : item.ingredient) + item.shop}
@@ -515,8 +516,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 																: item.ingredient
 														}</div>
 														<span className="pantry-item-category">
-															{item.ingredient && item.ingredient.category
-																? item.ingredient.category.replace(/_/g, ' ').toUpperCase()
+															{(item.category || (item.ingredient && item.ingredient.category))
+																? (item.category || item.ingredient.category).replace(/_/g, ' ').toUpperCase()
 																: 'SIN CATEGORÍA'}
 														</span>
 														{!item.id && (<div className="text-red-600 font-bold text-[0.9em] my-2">¡Este ingrediente no tiene id! No se puede eliminar ni marcar como comprado.</div>)}
@@ -568,8 +569,8 @@ function ShoppingList({ currentTab, onTabChange }) {
 																: item.ingredient
 													}</div>
 													<span className="pantry-item-category">
-														{item.ingredient && item.ingredient.category
-															? item.ingredient.category.replace(/_/g, ' ').toUpperCase()
+														{(item.category || (item.ingredient && item.ingredient.category))
+															? (item.category || item.ingredient.category).replace(/_/g, ' ').toUpperCase()
 															: 'SIN CATEGORÍA'}
 													</span>
 													<button className="pantry-item-delete" onClick={() => handleDelete(0, itemIdx)}>
