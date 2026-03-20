@@ -147,6 +147,7 @@ function ShoppingList({ currentTab, onTabChange }) {
 	}, []);
 
 
+
 	const handleAdd = async (newIngredient, newShopId, category = ingredientCategory) => {
 		try {
 			setAddIngredientError("");
@@ -221,12 +222,12 @@ function ShoppingList({ currentTab, onTabChange }) {
 				body: JSON.stringify({
 					shoppingList: [
 						{
-							ingredientId,
-							shopId,
+							ingredient: ingredientName,
+							shop: shopName,
 							category
 						}
 					],
-					shops: [shopId],
+					shops: [shopName],
 					filters: {}
 				})
 			});
@@ -259,13 +260,14 @@ function ShoppingList({ currentTab, onTabChange }) {
 
 	async function markAsBought(id, token, shopId) {
 		const purchaseDate = new Date().toISOString();
+		// No enviar category, solo los campos requeridos
 		const response = await authFetch(`/listacompra/${id}/bought`, {
 			method: 'PATCH',
 			headers: {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`
 			},
-			body: JSON.stringify({ bought: true, purchaseDate, shopId })
+			body: JSON.stringify({ bought: true, purchaseDate, shopId, quantity: 1 })
 		});
 		if (!response.ok) {
 			throw new Error('Error al marcar como comprado');
