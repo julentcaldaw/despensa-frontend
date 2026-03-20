@@ -19,7 +19,6 @@ const Login = () => {
     setLoading(true);
     setError(''); 
         try {
-      // Evitar doble /api en la URL
       const loginUrl = apiUrl.endsWith('/api') ? `${apiUrl}/login` : `${apiUrl}/api/login`;
       const response = await fetch(loginUrl, {
         method: 'POST',

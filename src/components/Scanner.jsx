@@ -59,12 +59,10 @@ const Scanner = ({ onScan, onClose }) => {
             html5QrCodeRef.current.stop();
           },
           (errorMessage) => {
-            // Ignorar errores de parseo de QR
             if (errorMessage && errorMessage.toLowerCase().includes('permission')) {
               setCameraError('No se pudo acceder a la cámara. Por favor, concede permisos o revisa la configuración del dispositivo.');
               console.error('Error de cámara:', errorMessage);
             }
-            // Si no es error de permisos, ignorar y no mostrar nada
           }
         )
         .catch((err) => {

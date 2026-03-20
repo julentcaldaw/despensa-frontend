@@ -7,14 +7,14 @@ import {
 } from 'lucide-react';
 
 const PREFERENCES = {
-    none:            { label: 'Sin Preferencias', icon: Leaf, color: '#f0f4c3' },
-  vegetarian:      { label: 'Vegetariano', icon: MilkOff, color: '#e0f7fa' },
-  lacto_vegetarian:     { label: 'Lacto-Vegetariano', icon: Leaf, color: '#e0f7fa' },
-  ovo_vegetarian:            { label: 'Ovo-Vegetariano', icon: Egg, color: '#f3e5f5' },
-  vegan:    { label: 'Vegano', icon: Leaf, color: '#fff9c4' },
-  pescetarian:      { label: 'Pescetariano', icon: Fish, color: '#ffe0b2' },
-  keto:         { label: 'Keto', icon: Flame, color: '#e1f5fe' },
-  paleo:         { label: 'Paleo', icon: Fish, color: '#e0f2f1' },
+  none: { label: 'Sin Preferencias', icon: Leaf, color: '#f0f4c3' },
+  vegetarian: { label: 'Vegetariano', icon: MilkOff, color: '#e0f7fa' },
+  lacto_vegetarian: { label: 'Lacto-Vegetariano', icon: Leaf, color: '#e0f7fa' },
+  ovo_vegetarian: { label: 'Ovo-Vegetariano', icon: Egg, color: '#f3e5f5' },
+  vegan: { label: 'Vegano', icon: Leaf, color: '#fff9c4' },
+  pescetarian: { label: 'Pescetariano', icon: Fish, color: '#ffe0b2' },
+  keto: { label: 'Keto', icon: Flame, color: '#e1f5fe' },
+  paleo: { label: 'Paleo', icon: Fish, color: '#e0f2f1' },
 };
 
 const containerVariants = {

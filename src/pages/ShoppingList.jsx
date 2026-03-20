@@ -32,13 +32,13 @@ function ShoppingList({ currentTab, onTabChange }) {
 	const [selectedShopFilter, setSelectedShopFilter] = useState('Todas');
 	const [shops, setShops] = useState([]);
 	const [shoppingList, setShoppingList] = useState([]);
-	const [allIngredients, setAllIngredients] = useState([]); // Añadido para evitar ReferenceError
-	const [showUser, setShowUser] = useState(false); // Añadido para evitar ReferenceError
-	const [selectedIngredient, setSelectedIngredient] = useState(""); // Añadido para evitar ReferenceError
+	const [allIngredients, setAllIngredients] = useState([]); 
+	const [showUser, setShowUser] = useState(false); 
+	const [selectedIngredient, setSelectedIngredient] = useState(""); 
 
-	const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras'); // Añadido para evitar ReferenceError
-	const [selectedShop, setSelectedShop] = useState(''); // Añadido para evitar ReferenceError
-	const [authError, setAuthError] = useState(""); // Añadido para mostrar errores de autenticación
+	const [ingredientCategory, setIngredientCategory] = useState('frutas_verduras'); 
+	const [selectedShop, setSelectedShop] = useState(''); 
+	const [authError, setAuthError] = useState(""); 
 
 	if (!user && !loading) {
 		return <div className="user-profile">Inicia sesión para ver tu lista de la compra</div>;
@@ -81,7 +81,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 					setShoppingList([]);
 					return;
 				}
-				// Incluye shop e ingredient en la consulta
 				const response = await authFetch('/listacompra?include=shop,ingredient');
 				if (response.status === 401 || response.status === 403) {
 					setAuthError('Sesión expirada o token inválido. Reintenta o cierra sesión.');
@@ -96,7 +95,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 			}
 		};
 
-		// Cargar tiendas del usuario
 		const fetchShops = async () => {
 			try {
 				const token = localStorage.getItem('token');
@@ -158,11 +156,9 @@ function ShoppingList({ currentTab, onTabChange }) {
 				return;
 			}
 
-			// Normalizar nombres antes de buscar o crear
 			const normalizedIngredient = normalizeName(newIngredient);
 			const normalizedShop = normalizeName(newShopId);
 
-			// Buscar el ingrediente por nombre en allIngredients
 			let ingredientObj = allIngredients.find(i => {
 				if (typeof newIngredient === 'object' && newIngredient.id) {
 					return i.id === newIngredient.id;
@@ -171,7 +167,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 			});
 			let ingredientId = ingredientObj ? ingredientObj.id : null;
 
-			// Si no existe, crearlo
 			if (!ingredientId) {
 				const res = await authFetch('/ingredients', {
 					method: 'POST',
@@ -186,11 +181,9 @@ function ShoppingList({ currentTab, onTabChange }) {
 				ingredientId = data.id;
 			}
 
-			// Buscar la tienda por ID en shops
 			let shopObj = shops.find(s => String(s.id) === String(newShopId));
 			let shopId = shopObj ? shopObj.id : null;
 
-			// Si no existe, crearlo (opcional, solo si permites crear tiendas desde el frontend)
 			if (!shopId && normalizedShop && normalizedShop !== '') {
 				const res = await authFetch('/myshops', {
 					method: 'POST',
@@ -205,7 +198,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 				shopId = data.id;
 			}
 
-			// Validar nombre y tienda antes de enviar
 			let ingredientName = '';
 			let shopName = '';
 			if (ingredientObj && ingredientObj.name) {
@@ -223,7 +215,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 				return;
 			}
 
-			// Enviar el formato esperado por el backend
 			const response = await authFetch('/listacompra', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -268,7 +259,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 
 	async function markAsBought(id, token, shopId) {
 		const purchaseDate = new Date().toISOString();
-		// Enviar shopId y purchaseDate
 		const response = await authFetch(`/listacompra/${id}/bought`, {
 			method: 'PATCH',
 			headers: {
@@ -312,7 +302,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 				setAuthError('No hay sesión activa. Por favor, inicia sesión.');
 				return;
 			}
-			// Usar shopId
 			const itemActualizado = await markAsBought(item.id, token, group.shopId || (group.shop && group.shop.id));
 			await fetchShoppingList();
 		} catch (err) {
@@ -385,7 +374,6 @@ function ShoppingList({ currentTab, onTabChange }) {
 
 
 
-	// Usar lista de tiendas con shopId y nombre, pero para el select solo usar valores string o number
 	const shopsList = ['Todas', ...shops.map(s => s.id)];
 	let displayedGroups = selectedShopFilter === 'Todas'
 		? filteredGroups

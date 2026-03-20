@@ -132,7 +132,6 @@ const Pantry = ({ currentTab, onTabChange }) => {
         ingredient = await createRes.json();
         setAllIngredients([...allIngredients, ingredient]);
       }
-      // Ya no se debe enviar category al crear en pantry
       const response = await authFetch('/pantry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
