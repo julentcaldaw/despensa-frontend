@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ShoppingCart, User as UserIcon, Heart, ChefHat, Package, LogOut, Settings, Bell, ArrowRight, Leaf, ShieldCheck, Receipt } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
-import DietRestrictions from './DietRestrictions';
-import DietPreferences from "./DietPreferences";
 import BottomNavigation from "../components/BottomNavigation";
 import { useAuth } from "../utils/AuthContext";
 import EditProfile from "../components/EditProfile";

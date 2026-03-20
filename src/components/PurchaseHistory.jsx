@@ -15,7 +15,6 @@ const PurchaseHistory = ({ userId }) => {
     const fetchHistory = async () => {
       setLoading(true);
       try {
-        // Incluir shop e ingredient en la consulta
         const res = await authFetch(`/miscompras/history/${userId}?include=shop,ingredient`);
         if (!res.ok) throw new Error('Error al cargar el historial');
         const data = await res.json();
